@@ -1,4 +1,4 @@
-# @verdeect/identity-integration-vue
+# @verdeect/identity-nav-vue
 
 ## Обзор
 
@@ -132,8 +132,9 @@
 (`NavItem` ↔ `NavigationData`, `IdentityProfile` ↔ `UserProfile`), который в двух
 репозиториях расходится молча; договорённость — согласованный minor.
 
-Репозиторий на `gitlab.mkomov.com` будет называться
-`verdeect-identity-integration-vue`, первый тег — `v0.1.0`.
+Репозиторий — `github.com/smskin/verdeect-identity-nav-vue`, лицензия MIT.
+Пакет публикуется в публичный npm как `@verdeect/identity-nav-vue`; первый
+тег — `v0.1.0`. Парный composer-пакет — `verdeect/identity-laravel`.
 
 ## Нефункциональные требования
 

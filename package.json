@@ -1,9 +1,27 @@
 {
-    "name": "@verdeect/identity-integration-vue",
+    "name": "@verdeect/identity-nav-vue",
     "version": "0.1.0",
-    "description": "Компоненты кросс-сервисной навигации Verdeect Identity и вывод состояния рейла для продуктов установки на Vue 3",
-    "license": "UNLICENSED",
-    "private": true,
+    "description": "Vue 3 integration with Verdeect Identity Service: global navigation rail, profile menu, rail state from backend props",
+    "license": "MIT",
+    "author": "Sergey Mihaylov",
+    "homepage": "https://github.com/smskin/verdeect-identity-nav-vue#readme",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/smskin/verdeect-identity-nav-vue.git"
+    },
+    "bugs": {
+        "url": "https://github.com/smskin/verdeect-identity-nav-vue/issues"
+    },
+    "keywords": [
+        "vue",
+        "vue3",
+        "verdeect",
+        "identity",
+        "navigation",
+        "sso",
+        "user-menu",
+        "inertia"
+    ],
     "type": "module",
     "exports": {
         ".": "./src/cross-service/index.ts",
@@ -13,9 +31,13 @@
         "./playwright": "./src/playwright/index.ts",
         "./package.json": "./package.json"
     },
+    "publishConfig": {
+        "access": "public"
+    },
     "files": [
         "src",
         "scripts",
+        "docs",
         "README.md"
     ],
     "scripts": {

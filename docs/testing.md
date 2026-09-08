@@ -18,7 +18,7 @@
 ## Вход в браузерных сценариях
 
 ```ts
-import { loginAs, logout } from '@verdeect/identity-integration-vue/playwright';
+import { loginAs, logout } from '@verdeect/identity-nav-vue/playwright';
 
 await loginAs(page, 'user');
 ```
@@ -50,7 +50,7 @@ await loginAs(page, 'user', { readySelector: '#app-shell' });
 // tests/Browser/support/login.ts
 import type { Page } from '@playwright/test';
 import { loginAs as loginToInstallation, type Role }
-    from '@verdeect/identity-integration-vue/playwright';
+    from '@verdeect/identity-nav-vue/playwright';
 
 const READY_SELECTOR = '.layout-wrapper';
 

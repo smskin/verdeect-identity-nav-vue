@@ -5,7 +5,7 @@
 
 ```css
 /* resources/css/app.css продукта */
-@import '@verdeect/identity-integration-vue/style.css';
+@import '@verdeect/identity-nav-vue/style.css';
 ```
 
 ## Порогов ширины в пакете нет ни одного

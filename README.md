@@ -1,4 +1,4 @@
-# @verdeect/identity-integration-vue
+# @verdeect/identity-nav-vue
 
 Компоненты кросс-сервисной навигации Verdeect Identity и вывод состояния рейла
 для продуктов установки на Vue 3.
@@ -25,19 +25,12 @@
 ## Быстрый старт
 
 ```bash
-npm install git+ssh://git@gitlab.mkomov.com:verdeect/verdeect-identity-integration-vue.git#v0.1.0
-```
-
-Там, где SSH-ключа нет — в контейнере сборки или на конвейере, — та же
-установка идёт по HTTPS ([Установка](docs/installation.md)):
-
-```bash
-npm install git+https://gitlab.mkomov.com/verdeect/verdeect-identity-integration-vue.git#v0.1.0
+npm install @verdeect/identity-nav-vue
 ```
 
 Три шага, без которых рейл не заработает:
 
-1. Импортировать стили: `@import '@verdeect/identity-integration-vue/style.css'`
+1. Импортировать стили: `@import '@verdeect/identity-nav-vue/style.css'`
    и подключить шрифт PrimeIcons
    ([Установка](docs/installation.md)).
 2. Смонтировать **два** экземпляра `CrossServiceNav` — `placement="rail"`

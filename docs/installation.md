@@ -17,34 +17,17 @@
 
 ## Установка
 
-По SSH — на рабочей машине, где ключ уже в агенте:
-
 ```bash
-npm install git+ssh://git@gitlab.mkomov.com:verdeect/verdeect-identity-integration-vue.git#v0.1.0
+npm install @verdeect/identity-nav-vue
 ```
 
-По HTTPS — там, где ключа нет:
+Пакет опубликован в публичном реестре npm, поэтому ни ключа, ни токена для
+установки не нужно — ни на машине разработчика, ни в контейнере сборки, ни на
+конвейере. Исходники лежат на [GitHub](https://github.com/smskin/verdeect-identity-nav-vue)
+под лицензией MIT.
 
-```bash
-npm install git+https://gitlab.mkomov.com/verdeect/verdeect-identity-integration-vue.git#v0.1.0
-```
-
-**Способы равноправны и отличаются только тем, чем доказывается право на
-чтение.** SSH требует ключа в агенте: на машине разработчика он есть, а в
-контейнере сборки или на конвейере его обычно нет, и установка падает отказом
-доступа ещё до разрешения зависимостей. HTTPS в обмен требует учётных данных —
-и там, где вход неинтерактивный, они передаются прямо в адресе:
-
-```bash
-# конвейер GitLab — токеном задания, живущим только на время прогона
-npm install git+https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.mkomov.com/verdeect/verdeect-identity-integration-vue.git#v0.1.0
-```
-
-Токен подставляется переменной окружения и в `package.json` не попадает:
-записанный в зависимость, он уехал бы в репозиторий продукта и в его сборку.
-
-Версия задаётся тегом. Одноранговые зависимости, кроме `vue`, объявлены
-необязательными — ставится только то, что продукт действительно потребляет.
+Одноранговые зависимости, кроме `vue`, объявлены необязательными — ставится
+только то, что продукт действительно потребляет.
 
 | Зависимость | Обязательна | Когда нужна |
 | --- | --- | --- |
@@ -56,14 +39,14 @@ npm install git+https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.mkomov.com/verdee
 ## Пять входов
 
 ```ts
-import { CrossServiceNav, UserMenu } from '@verdeect/identity-integration-vue';
-import { useIdentity } from '@verdeect/identity-integration-vue/inertia';
-import { useIdentityView } from '@verdeect/identity-integration-vue/identity';
-import { loginAs } from '@verdeect/identity-integration-vue/playwright';
+import { CrossServiceNav, UserMenu } from '@verdeect/identity-nav-vue';
+import { useIdentity } from '@verdeect/identity-nav-vue/inertia';
+import { useIdentityView } from '@verdeect/identity-nav-vue/identity';
+import { loginAs } from '@verdeect/identity-nav-vue/playwright';
 ```
 
 ```css
-@import '@verdeect/identity-integration-vue/style.css';
+@import '@verdeect/identity-nav-vue/style.css';
 ```
 
 | Вход | Содержимое | Зависимости |
@@ -83,7 +66,7 @@ import { loginAs } from '@verdeect/identity-integration-vue/playwright';
 ## Проверка подключения
 
 ```bash
-npm ls @verdeect/identity-integration-vue   # разрешился ли пакет
+npm ls @verdeect/identity-nav-vue   # разрешился ли пакет
 npm run build                               # .vue из зависимости собирается
 ```
 

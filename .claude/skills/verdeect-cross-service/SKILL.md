@@ -1,7 +1,7 @@
 ---
 name: verdeect-cross-service
 description: >-
-  Контракт пакета @verdeect/identity-integration-vue — библиотеки компонентов
+  Контракт пакета @verdeect/identity-nav-vue — библиотеки компонентов
   кросс-сервисной навигации Verdeect Identity, поставляемой исходниками без шага
   сборки. Обязателен к применению при любой правке этого репозитория: файлов
   каталога-эталона src/cross-service (CrossServiceNav, UserMenu, strings.ts,
@@ -11,14 +11,14 @@ description: >-
   и наборов tests/. Держит правила изоляции каталога, границы пяти входов
   пакета, запрет числовых порогов ширины, обязанности встраивающего продукта,
   стиль кода и порядок прогона npm test.
-license: UNLICENSED
+license: MIT
 metadata:
   author: verdeect
   version: "1.0"
   category: project-contract
 ---
 
-# Контракт пакета @verdeect/identity-integration-vue
+# Контракт пакета @verdeect/identity-nav-vue
 
 Пакет отдаёт продуктам установки рейл кросс-сервисной навигации, блок
 пользователя единого входа, их визуальный слой, вывод состояния рейла и вход

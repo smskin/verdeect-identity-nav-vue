@@ -6,7 +6,7 @@
 ## Продукт на Inertia
 
 ```ts
-import { useIdentity } from '@verdeect/identity-integration-vue/inertia';
+import { useIdentity } from '@verdeect/identity-nav-vue/inertia';
 
 const { profile, crossService, locale, hasRail, currentUrl } = useIdentity();
 ```
@@ -22,7 +22,7 @@ const { profile, crossService, locale, hasRail, currentUrl } = useIdentity();
 ## Продукт на другом стеке
 
 ```ts
-import { useIdentityView } from '@verdeect/identity-integration-vue/identity';
+import { useIdentityView } from '@verdeect/identity-nav-vue/identity';
 
 const view = useIdentityView({
     props: () => store.identity,       // сырые свойства с бэкенда
@@ -66,7 +66,7 @@ import type {
     IdentityProfile,
     CrossServiceData,
     IdentityProps,
-} from '@verdeect/identity-integration-vue/identity';
+} from '@verdeect/identity-nav-vue/identity';
 ```
 
 `IdentityProfile` — `sub`, `name`, `givenName`, `familyName`, `middleName`,
@@ -81,7 +81,7 @@ import type {
 
 ```ts
 // resources/js/types/global.d.ts продукта
-import type { IdentityProps } from '@verdeect/identity-integration-vue/identity';
+import type { IdentityProps } from '@verdeect/identity-nav-vue/identity';
 
 declare module '@inertiajs/core' {
     export interface InertiaConfig {
