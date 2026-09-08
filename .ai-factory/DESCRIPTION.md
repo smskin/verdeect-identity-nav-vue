@@ -127,14 +127,18 @@
 ## Связи экосистемы
 
 Потребителей два: `cleaner-service` и `identity-service`, оба подключают пакет
-ссылкой `file:` на соседний каталог. Рядом лежит парная composer-библиотека
-`../identity-integration-php` — между ними контракт по данным рейла и профиля
-(`NavItem` ↔ `NavigationData`, `IdentityProfile` ↔ `UserProfile`), который в двух
-репозиториях расходится молча; договорённость — согласованный minor.
+версией из npm (`^0.1.0`), а не ссылкой на соседний каталог.
+
+Парная composer-библиотека — `verdeect/identity-laravel`
+(`github.com/smskin/verdeect-identity-laravel`, локально
+`../identity-integration-php`). Между библиотеками контракт по данным рейла и
+профиля (`NavItem` ↔ `NavigationData`, `IdentityProfile` ↔ `UserProfile`),
+который в двух репозиториях расходится молча; договорённость — согласованный
+minor.
 
 Репозиторий — `github.com/smskin/verdeect-identity-nav-vue`, лицензия MIT.
-Пакет публикуется в публичный npm как `@verdeect/identity-nav-vue`; первый
-тег — `v0.1.0`. Парный composer-пакет — `verdeect/identity-laravel`.
+Пакет опубликован в публичном npm как `@verdeect/identity-nav-vue`; первый
+тег — `v0.1.0`.
 
 ## Нефункциональные требования
 
@@ -151,4 +155,4 @@
   компонентов; логотип грузится с чужого домена, поэтому origin установки
   обязан стоять в `img-src` продукта.
 - **Совместимость:** изменение контракта данных согласуется с
-  `../identity-integration-php` и выпускается согласованным minor.
+  `verdeect/identity-laravel` и выпускается согласованным minor.

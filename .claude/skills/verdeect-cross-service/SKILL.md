@@ -149,7 +149,7 @@ Node. **Отдельного прогонщика не заводить** — Pl
 3. Докблок — если появилось правило, чьё нарушение неочевидно.
 4. Прогнать `npm test` целиком.
 5. Изменение контракта данных (`NavItem`, `IdentityProfile`,
-   `CrossServiceData`) согласовать с `../identity-integration-php`
+   `CrossServiceData`) согласовать с `verdeect/identity-laravel`
    и выпустить согласованным minor — см. [references/CONTRACT.md](references/CONTRACT.md).
 
 ## 9. Совместное применение с `vue-best-practices`
