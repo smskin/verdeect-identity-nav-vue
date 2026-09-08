@@ -28,6 +28,13 @@
 npm install git+ssh://git@gitlab.mkomov.com:verdeect/verdeect-identity-integration-vue.git#v0.1.0
 ```
 
+Там, где SSH-ключа нет — в контейнере сборки или на конвейере, — та же
+установка идёт по HTTPS ([Установка](docs/installation.md)):
+
+```bash
+npm install git+https://gitlab.mkomov.com/verdeect/verdeect-identity-integration-vue.git#v0.1.0
+```
+
 Три шага, без которых рейл не заработает:
 
 1. Импортировать стили: `@import '@verdeect/identity-integration-vue/style.css'`

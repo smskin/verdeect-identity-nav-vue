@@ -71,8 +71,9 @@
 
 - Репозиторий на `gitlab.mkomov.com` — `verdeect-identity-integration-vue`.
 - Первый тег — `v0.1.0`.
-- Установка потребителем:
-  `npm install git+ssh://git@gitlab.mkomov.com:verdeect/verdeect-identity-integration-vue.git#<тег>`.
+- Установка потребителем — двумя равноправными способами, по SSH и по HTTPS
+  (`docs/installation.md`): ключ есть не везде, а на конвейере вход
+  неинтерактивный и идёт токеном задания.
 - Пакет `private: true` и в реестр не публикуется.
 
 ## Что переехало в пакет вместе с компонентами
