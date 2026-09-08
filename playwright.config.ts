@@ -16,21 +16,11 @@ export default defineConfig({
     fullyParallel: true,
 
     /*
-     * На конвейере — список плюс JUnit-отчёт файлом.
-     *
-     * Репортёра `gitlab` у Playwright нет: встроенные — `list`, `dot`, `line`,
-     * `github`, `json`, `junit`, `null`, `html` и `perfetto`. GitLab читает
-     * падения из JUnit XML, объявленного в задании через
-     * `artifacts:reports:junit`, — отсюда `junit` с явным `outputFile`.
-     *
-     * `list` оставлен рядом, потому что JUnit пишется файлом и в журнале
-     * задания не виден: без него упавший прогон пришлось бы открывать
-     * вкладкой отчёта вместо чтения вывода.
-     *
-     * Отчёт кладётся в `test-results/` — этот каталог уже исключён из-под
-     * присмотра git, и файл не попадёт в коммит случайно.
+     * На конвейере — репортёр `github`: прогон идёт в GitHub Actions
+     * (`.github/workflows/publish.yml`), и он размечает падения аннотациями
+     * прямо в задании и в разборе изменений. Файлового отчёта здесь не нужно:
+     * читать JUnit XML в GitHub Actions некому — это формат для конвейеров,
+     * которые разбирают его сами.
      */
-    reporter: process.env.CI
-        ? [['list'], ['junit', { outputFile: 'test-results/junit.xml' }]]
-        : 'list',
+    reporter: process.env.CI ? 'github' : 'list',
 });
