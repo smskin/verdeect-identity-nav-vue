@@ -1,0 +1,54 @@
+{
+    "name": "@verdeect/identity-integration-vue",
+    "version": "0.1.0",
+    "description": "Компоненты кросс-сервисной навигации Verdeect Identity и вывод состояния рейла для продуктов установки на Vue 3",
+    "license": "UNLICENSED",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./src/cross-service/index.ts",
+        "./style.css": "./src/style.css",
+        "./identity": "./src/identity/index.ts",
+        "./inertia": "./src/inertia/index.ts",
+        "./playwright": "./src/playwright/index.ts",
+        "./package.json": "./package.json"
+    },
+    "files": [
+        "src",
+        "scripts",
+        "README.md"
+    ],
+    "scripts": {
+        "check:strings": "node scripts/check-component-strings.mjs",
+        "check:isolation": "node scripts/check-component-isolation.mjs",
+        "types:check": "vue-tsc --noEmit",
+        "test:unit": "playwright test",
+        "test": "npm run check:strings && npm run check:isolation && npm run types:check && npm run test:unit"
+    },
+    "peerDependencies": {
+        "@inertiajs/vue3": "^3.0.0",
+        "@playwright/test": "^1.62.0",
+        "primeicons": "^7.0.0",
+        "vue": "^3.5.0"
+    },
+    "peerDependenciesMeta": {
+        "@inertiajs/vue3": {
+            "optional": true
+        },
+        "@playwright/test": {
+            "optional": true
+        },
+        "primeicons": {
+            "optional": true
+        }
+    },
+    "devDependencies": {
+        "@inertiajs/vue3": "^3.0.0",
+        "@playwright/test": "^1.62.1",
+        "@types/node": "^22.13.5",
+        "typescript": "^5.2.2",
+        "vite": "^8.0.0",
+        "vue": "^3.5.13",
+        "vue-tsc": "^2.2.4"
+    }
+}

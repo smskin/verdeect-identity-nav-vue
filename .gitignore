@@ -1,0 +1,14 @@
+node_modules/
+.DS_Store
+*.log
+.idea/
+.vscode/
+test-results/
+playwright-report/
+
+# Скиллы, которые ставятся заново, а не версионируются:
+# каталог AI Factory (см. .ai-factory.json) и внешние навыки (см. skills-lock.json).
+# В репозитории живёт только собственный навык пакета.
+.claude/skills/aif
+.claude/skills/aif-*
+.claude/skills/vue-best-practices/
