@@ -23,7 +23,7 @@ import type { NavItem } from '../src/cross-service/types';
  * правило подключено к рейлу, а не что оно верно само по себе.
  */
 function item(id: string, url: string): NavItem {
-    return { id, name: { ru: id, en: id }, url, icon: 'pi-user', order: 1 };
+    return { id, name: { ru: id, en: id }, url, iconUrl: '', order: 1 };
 }
 
 test('подсвечивается пункт с самым длинным совпавшим путём', () => {
