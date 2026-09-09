@@ -84,6 +84,7 @@
     :short-name="profile.shortName"
     :name="profile.name"
     :initials="profile.initials"
+    :email="profile.email"
     :profile-url="crossService.profileUrl"
     :locale="locale"
     @logout="logout"
@@ -92,6 +93,10 @@
 
 Формы имени приходят готовыми — компонент их не склеивает и не сокращает.
 Их считает бэкенд (`verdeect/identity-integration`).
+
+Адрес приходит оттуда же, полем `email` профиля. Оно бывает пустым — установка,
+которой не разрешена область `email`, утверждения не отдаёт, — и на пустое
+значение компонент строку адреса не показывает.
 
 ## `currentUrl` передавайте явно и абсолютным
 

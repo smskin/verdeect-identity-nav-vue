@@ -70,7 +70,9 @@ import type {
 ```
 
 `IdentityProfile` — `sub`, `name`, `givenName`, `familyName`, `middleName`,
-`locale`, `shortName`, `initials`.
+`locale`, `shortName`, `initials`, `email`. Поле `email` обязательно, но пустая
+строка законна: установка, которой не разрешена область `email`, адреса
+не отдаёт, и показывать в этом случае нечего.
 `CrossServiceData` — `items`, `profileUrl`, `logoUrl`.
 `IdentityProps` — пара `profile` и `crossService`.
 
