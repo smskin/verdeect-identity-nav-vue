@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ref } from 'vue';
+import NavTip from './NavTip.vue';
 import { translate } from './strings';
 
 /**
@@ -29,27 +31,58 @@ interface Props {
     /** Подпись рядом со значком — её просит блок меню, где подписи видны. */
     readonly labelled?: boolean;
     /**
-     * Узел подсказки — его просит полоса, где подписи нет.
+     * Подсказка по наведению — её просит полоса, где подписи нет.
      *
      * Панель внизу не просит ни того ни другого: подписей там нет, а подсказка
      * по наведению на телефоне не раскрывается — имя доступно `aria-label`.
      * Явные признаки вместо «не подпись значит подсказка»: иначе панель
-     * возила бы узел, который её таблица стилей никогда не покажет.
+     * заводила бы обработчики, которым нечего показывать.
      */
     readonly tipped?: boolean;
+    /**
+     * Открыта ли страница профиля — тогда шестерёнка подсвечена как текущая.
+     *
+     * Признак приходит извне, а не считается здесь: правило текущей цели одно
+     * на весь рейл и живёт в `useNavView`. Второе его воплощение — пусть даже
+     * на одну ссылку — разошлось бы с первым.
+     */
+    readonly current?: boolean;
 }
 
 const props = defineProps<Props>();
 
 const t = (key: string): string => translate(props.locale, key);
+
+/**
+ * Ссылка, у которой показана подсказка, либо `null`.
+ *
+ * Подсказка выносится в `body` тем же `NavTip`, что и у пунктов: внутри полосы
+ * её обрезает прокрутка, и шестерёнка страдает от этого сильнее прочих — она
+ * прижата к низу, где обрезание заметно менее всего.
+ */
+const tipAnchor = ref<HTMLElement | null>(null);
+
+const showTip = (event: Event): void => {
+    tipAnchor.value = event.currentTarget as HTMLElement;
+};
+
+const hideTip = (): void => {
+    tipAnchor.value = null;
+};
 </script>
 
 <template>
     <a
         class="cross-service-nav__link cross-service-nav__link--settings"
+        :class="{ 'cross-service-nav__link--current': current === true }"
+        :aria-current="current === true ? 'page' : undefined"
         :href="href"
         :aria-label="t('settings')"
         data-testid="cross-service-settings"
+        @mouseenter="tipped === true && showTip($event)"
+        @mouseleave="hideTip"
+        @focus="tipped === true && showTip($event)"
+        @blur="hideTip"
     >
         <span class="cross-service-nav__icon cross-service-nav__glyph">
             <svg
@@ -72,8 +105,6 @@ const t = (key: string): string => translate(props.locale, key);
             t('settings')
         }}</span>
 
-        <span v-if="tipped" class="cross-service-nav__tip" aria-hidden="true">{{
-            t('settings')
-        }}</span>
+        <NavTip :text="t('settings')" :anchor="tipAnchor" />
     </a>
 </template>

@@ -31,7 +31,7 @@
 }
 
 .cross-service-nav--menu .cross-service-nav__link--current {
-    border-left-color: var(--primary-color, #10b981);
+    border-left-color: #8265ea;
 }
 
 .cross-service-nav--menu .cross-service-nav__label {
@@ -57,11 +57,11 @@
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--primary-color, #10b981);
+    color: #8265ea;
 }
 
 .cross-service-nav__divider {
     margin: 10px 4px;
     border: 0;
-    border-top: 1px solid var(--surface-border, #eef2f6);
+    border-top: 1px solid #eef2f6;
 }

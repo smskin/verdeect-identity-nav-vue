@@ -32,6 +32,8 @@ export interface NavView {
     currentId: ComputedRef<string | null>;
     /** Показывать ли шестерёнку настроек. */
     hasSettings: ComputedRef<boolean>;
+    /** Открыта ли страница, на которую ведёт шестерёнка. */
+    settingsCurrent: ComputedRef<boolean>;
     /** Имя пункта на языке пользователя. */
     nameOf: (item: NavItem) => string;
     /** Первая буква имени — заглушка вместо иконки. */
@@ -60,10 +62,6 @@ export function useNavView(source: NavViewSource): NavView {
         () => source.currentUrl ?? openedAtMount.value,
     );
 
-    const currentId = computed<string | null>(() =>
-        currentItemId(source.items, openedUrl.value),
-    );
-
     /**
      * Шестерёнка показывается по непустому адресу профиля.
      *
@@ -74,6 +72,48 @@ export function useNavView(source: NavViewSource): NavView {
      */
     const hasSettings = computed<boolean>(
         () => source.profileUrl !== undefined && source.profileUrl !== '',
+    );
+
+    /**
+     * Опознаватель шестерёнки в правиле текущего пункта.
+     *
+     * Начинается с двоеточия — знака, которого в ULID реестра не бывает:
+     * совпасть с идентификатором пункта он не может ни при каком составе
+     * установки.
+     */
+    const SETTINGS_ID = ':settings';
+
+    /**
+     * Цели правила: пункты реестра и, **последней**, шестерёнка.
+     *
+     * Без неё страница профиля попадала под запасной ярус «первый пункт того же
+     * хоста», и на открытых настройках горел первый пункт установки — «текущим»
+     * оказывался раздел, которого человек не открывал. Раздел без своего пункта
+     * — случай обычный, но профиль перестал им быть: у него есть цель в рейле.
+     *
+     * Порядок значим: запасной ярус берёт первую цель хоста, и шестерёнка,
+     * стоящая последней, его не перехватывает.
+     */
+    const targets = computed(() =>
+        hasSettings.value
+            ? [
+                  ...source.items,
+                  { id: SETTINGS_ID, url: source.profileUrl ?? '' },
+              ]
+            : source.items,
+    );
+
+    const matchedId = computed<string | null>(() =>
+        currentItemId(targets.value, openedUrl.value),
+    );
+
+    const settingsCurrent = computed<boolean>(
+        () => matchedId.value === SETTINGS_ID,
+    );
+
+    /** Шестерёнка пунктом не является: подсвечивается она, а не пункт. */
+    const currentId = computed<string | null>(() =>
+        settingsCurrent.value ? null : matchedId.value,
     );
 
     /**
@@ -112,5 +152,13 @@ export function useNavView(source: NavViewSource): NavView {
         },
     );
 
-    return { currentId, hasSettings, nameOf, initialOf, stubbed, onIconError };
+    return {
+        currentId,
+        hasSettings,
+        settingsCurrent,
+        nameOf,
+        initialOf,
+        stubbed,
+        onIconError,
+    };
 }

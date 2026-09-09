@@ -40,10 +40,10 @@
 
     width: var(--cross-service-rail-width);
     height: 100vh;
-    padding: 12px 0;
+    padding: var(--cross-service-rail-padding) 0;
 
-    background-color: var(--surface-card, #fff);
-    border-right: 1px solid var(--surface-border, #e5e7eb);
+    background-color: #f4f4f4;
+    border-right: 1px solid #e6e6e6;
 
     /*
      * Пунктов может оказаться больше, чем помещается по высоте: рейл
@@ -54,13 +54,61 @@
     overscroll-behavior: contain;
 }
 
+/*
+ * Логотип занимает **всю ширину полосы** и прижат к её верхнему краю (макет,
+ * кадр «Desktop rail»): это плитка, а не значок в ряду пунктов.
+ *
+ * Отрицательный верхний отступ гасит `padding: 12px` самой полосы — иначе
+ * плитка висела бы под зазором, и «во всю ширину» читалось бы как оплошность
+ * вёрстки. Ширина берётся переменной, а не повторяется числом: полоса и плитка
+ * обязаны совпадать, а два числа разошлись бы при первой правке.
+ *
+ * Скругления нет намеренно: у пунктов оно есть (10px), и одинаковое скругление
+ * поставило бы логотип в один ряд с ними — а он не пункт и не нажимается.
+ *
+ * `object-fit: contain` сохраняет пропорции: файл загружает администратор
+ * установки, и его соотношение сторон заранее неизвестно. Квадратный логотип
+ * заполняет плитку целиком, вытянутый вписывается по большей стороне.
+ *
+ * **Подложки под логотипом нет, хотя в макете она есть, и возвращать её
+ * не следует.** В макете плитка залита фирменным цветом, а поверх лежит знак
+ * Verdeect известных пропорций. Здесь же плитка — просто место под файл,
+ * приходящий из установки: он несёт собственный фон, и зашитый цвет просвечивал
+ * бы у прозрачных логотипов и спорил бы с непрозрачными. Решение владельца
+ * проекта 09.09.2026.
+ */
+
 .cross-service-nav__logo {
     flex: none;
-    width: 44px;
-    height: 44px;
-    margin-bottom: 16px;
-    border-radius: 10px;
-    object-fit: contain;
+
+    /*
+     * **Ширина — `100%`, а не переменная полосы, и высота выводится из неё.**
+     * У полосы есть граница справа, и её содержимое **у́же** объявленной ширины
+     * на пиксель. Плитка, взявшая переменную обоими размерами, получала коробку
+     * 63×64: квадратный логотип вписывался как 63×63 и центровался по вертикали,
+     * оставляя по половине пикселя фона сверху и снизу. На экране с двойной
+     * плотностью это видимая светлая линия над логотипом — и найдена она была
+     * глазами, а не проверкой.
+     */
+    width: 100%;
+    aspect-ratio: 1;
+
+    margin: calc(-1 * var(--cross-service-rail-padding)) 0 12px;
+    border-radius: 0;
+
+    /*
+     * **`cover`, а не `contain`: плитка заполняется целиком.** Пустые поля
+     * в ней читаются как изъян вёрстки — это уже проверено на половине пикселя,
+     * которую было видно светлой линией. С пропом `logoHeight` плитка перестаёт
+     * быть квадратной, и при `contain` поля появлялись бы у всякого логотипа,
+     * чьи пропорции не совпали с заданной высотой.
+     *
+     * Цена — логотип иных пропорций обрезается по большей стороне. Она принята
+     * осознанно: файл загружает администратор установки и видит его на экране
+     * настроек, а плитка — место под знак, а не витрина для изображения любой
+     * формы.
+     */
+    object-fit: cover;
 }
 
 /*
@@ -96,52 +144,6 @@
 
 .cross-service-nav--rail .cross-service-nav__label {
     display: none;
-}
-
-.cross-service-nav--rail .cross-service-nav__tip {
-    display: block;
-    position: absolute;
-    left: 54px;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 10;
-
-    padding: 6px 10px;
-    border-radius: 7px;
-    white-space: nowrap;
-
-    font-size: 13px;
-    font-weight: 400;
-    line-height: 1.2;
-
-    background-color: var(--tooltip-background, #1b1b1b);
-    color: var(--tooltip-color, #fff);
-
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-}
-
-.cross-service-nav--rail .cross-service-nav__link:hover .cross-service-nav__tip,
-.cross-service-nav--rail
-    .cross-service-nav__link:focus-visible
-    .cross-service-nav__tip {
-    opacity: 1;
-    visibility: visible;
-}
-
-/* Уголок подсказки — псевдоэлементом: отдельного узла разметке он не стоит. */
-
-.cross-service-nav--rail .cross-service-nav__tip::before {
-    content: '';
-    position: absolute;
-    left: -4px;
-    top: 50%;
-    width: 8px;
-    height: 8px;
-    margin-top: -4px;
-    background-color: inherit;
-    transform: rotate(45deg);
 }
 
 /*

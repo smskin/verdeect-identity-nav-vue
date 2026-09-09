@@ -27,8 +27,15 @@ import type { CrossServiceMenuProps } from './types';
  */
 const props = defineProps<CrossServiceMenuProps>();
 
-const { currentId, hasSettings, nameOf, initialOf, stubbed, onIconError } =
-    useNavView(props);
+const {
+    currentId,
+    hasSettings,
+    settingsCurrent,
+    nameOf,
+    initialOf,
+    stubbed,
+    onIconError,
+} = useNavView(props);
 
 const t = (key: string): string => translate(props.locale, key);
 </script>
@@ -84,6 +91,7 @@ const t = (key: string): string => translate(props.locale, key);
             :href="profileUrl ?? ''"
             :locale="locale"
             labelled
+            :current="settingsCurrent"
         />
 
         <hr class="cross-service-nav__divider" />

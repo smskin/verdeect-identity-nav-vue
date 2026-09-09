@@ -36,20 +36,27 @@
     align-items: center;
     gap: 12px;
 
-    color: var(--text-color-secondary, #5c5c5c);
+    color: #5c5c5c;
     border-radius: 10px;
     transition: background-color var(--transition-duration, 0.2s);
 }
 
+/*
+ * **Наведение меняет только фон.** Цвет начертания остаётся тем же, что
+ * у покоя (макет: `style-hover` задаёт единственное свойство — `background`,
+ * а `color` у пункта один на оба состояния). Прежде он темнел до `--text-color`,
+ * и под курсором пункт становился темнее не только фоном: значок шестерёнки
+ * и буква заглушки следуют `currentColor`, и их тон прыгал вместе с ним.
+ */
+
 .cross-service-nav__link:hover {
-    background-color: var(--surface-hover, #e8e8e8);
-    color: var(--text-color, #1b1b1b);
+    background-color: #e8e8e8;
 }
 
 /* Нажатие — тон темнее наведения (макет, «Состояния пункта»). */
 
 .cross-service-nav__link:active {
-    background-color: var(--surface-active, #e4e4e4);
+    background-color: #e4e4e4;
 }
 
 .cross-service-nav__link:focus-visible {
@@ -72,16 +79,31 @@
  * продукта», а не собственный набор значений. Запасное взято из макета.
  */
 
+/*
+ * **Цвета текущего пункта — постоянные, а не переменные темы продукта.**
+ * Решение владельца проекта 09.09.2026, и оно отменяет прежнее.
+ *
+ * Рейл — навигация **установки**, а не раздел продукта: одни и те же сервисы,
+ * один и тот же порядок, одно и то же место на экране во всех продуктах.
+ * Следуя теме хозяина, он выглядел бы в каждом по-своему, и узнавание — то
+ * единственное, ради чего он вообще существует, — терялось бы. Поэтому
+ * подсветка берётся из макета и не подменяется ничем.
+ *
+ * Цена названа прямо: продукт не может привести рейл к своей палитре, и
+ * в тёмной теме подсветка остаётся светлой. Это следствие решения, а не
+ * недосмотр.
+ */
+
 .cross-service-nav__link--current {
-    background-color: var(--highlight-background, #e9e4fb);
-    color: var(--highlight-color, #047857);
+    background-color: #e9e4fb;
+    color: #8265ea;
     font-weight: 600;
 }
 
 /* Наведение не гасит подсветку текущего пункта. */
 
 .cross-service-nav__link--current:hover {
-    background-color: var(--highlight-background, #e9e4fb);
+    background-color: #e9e4fb;
 }
 
 /*
@@ -109,13 +131,21 @@
     flex: none;
 
     line-height: 1;
-    border-radius: 6px;
 }
 
-/* Заглушка первой буквой — единственная, кому фон ещё нужен: буква на нём читается. */
+/*
+ * **Скругления у иконки нет.** Оно осталось от плашки, убранной вместе
+ * с риской, и на изображении ведёт себя иначе, чем вело на плашке: срезает
+ * углы самому файлу иконки. В эталоне значок нарисован штрихом и не скруглён
+ * ничем.
+ *
+ * Заглушка первой буквой — другое дело: у неё фон, и на нём скругление
+ * осмысленно. Ей же фон и нужен — иначе буква не читается.
+ */
 
 .cross-service-nav .cross-service-nav__stub {
-    background-color: var(--surface-ground, #eef2f6);
+    border-radius: 6px;
+    background-color: #eef2f6;
 }
 
 /*
@@ -129,12 +159,48 @@
  * За читаемость на тоне рейла отвечает администратор установки, выбирая файл.
  */
 
-.cross-service-nav img.cross-service-nav__icon {
-    object-fit: contain;
+/*
+ * **Иконка — маска, а не изображение.** Из файла берётся силуэт, заливка —
+ * из `currentColor` ссылки: так цвет состояний задаёт таблица стилей, а не
+ * содержимое загруженного файла. Внешнее изображение цвет страницы
+ * не наследует, и `currentColor` внутри него разрешался в чёрный.
+ *
+ * `mask-size: contain` — тот же смысл, что был у `object-fit` изображения:
+ * силуэт вписывается целиком, пропорции сохраняются.
+ *
+ * Приставка `-webkit-` обязательна: без неё маска не работает в Safari.
+ */
+
+.cross-service-nav .cross-service-nav__icon {
+    background-color: currentcolor;
+
+    -webkit-mask-image: var(--cross-service-icon);
+    mask-image: var(--cross-service-icon);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+}
+
+/*
+ * Скрытая картинка внутри маски: единственный способ узнать, что файл
+ * не загрузился. У маски события `error` не бывает — она свойство оформления.
+ * Размер нулевой, а не `display: none`: скрытая так картинка грузится всеми
+ * обозревателями одинаково надёжно.
+ */
+
+.cross-service-nav__probe {
+    position: absolute;
+    width: 0;
+    height: 0;
+    opacity: 0;
+    pointer-events: none;
 }
 
 .cross-service-nav .cross-service-nav__stub {
-    color: var(--text-color-secondary, #6b7280);
+    color: #6b7280;
 }
 
 /*
@@ -144,8 +210,8 @@
  */
 
 .cross-service-nav .cross-service-nav__link--current .cross-service-nav__stub {
-    color: var(--primary-contrast-color, #fff);
-    background-color: var(--primary-color, #10b981);
+    color: #fff;
+    background-color: #8265ea;
 }
 
 /*
@@ -174,8 +240,51 @@
  * накрыла бы соседний пункт и увела наведение с него.
  */
 
+/*
+ * Узел подсказки живёт в `body`, а не внутри полосы: `NavTip` выносит его
+ * туда `Teleport`'ом. Поэтому правило **не вложено** ни в один вид навигации —
+ * снаружи полосы её класс на предке не найдётся, и вложенное правило
+ * не применилось бы вовсе.
+ *
+ * Показом ведает состояние компонента: узла нет, пока не наведено. Прежние
+ * `opacity`/`visibility` с переключением по `:hover` не нужны — переключать
+ * нечего.
+ *
+ * Указатель узел не перехватывает: иначе подсказка накрыла бы соседний пункт
+ * и увела наведение с него.
+ */
+
 .cross-service-nav__tip {
-    display: none;
+    position: fixed;
+    z-index: 1000;
+    transform: translateY(-50%);
+
+    padding: 6px 10px;
+    border-radius: 7px;
+    white-space: nowrap;
+
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.2;
+
+    background-color: #1b1b1b;
+    color: #fff;
+
+    pointer-events: none;
+}
+
+/* Уголок подсказки — псевдоэлементом: отдельного узла разметке он не стоит. */
+
+.cross-service-nav__tip::before {
+    content: '';
+    position: absolute;
+    left: -4px;
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    margin-top: -4px;
+    background-color: inherit;
+    transform: rotate(45deg);
 }
 
 /*
