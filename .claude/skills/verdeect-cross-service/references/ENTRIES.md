@@ -7,8 +7,13 @@
 
 Файлы: `src/cross-service/`. Зависимость: `vue`.
 
-Отдаёт `CrossServiceNav`, `UserMenu` и типы `NavItem`, `ProductMenuItem`,
-`NavPlacement`, `CrossServiceNavProps`, `UserMenuProps`.
+Отдаёт `CrossServiceRail`, `CrossServiceMenu`, `CrossServiceBar`, `UserMenu`
+и типы `NavItem`, `ProductMenuItem`, `NavPlacement`, `CrossServiceRailProps`,
+`CrossServiceMenuProps`, `CrossServiceBarProps`, `UserMenuProps`.
+
+Три вида навигации: полоса слева (десктоп), блок в выдвижном меню продукта
+и плашка внизу экрана. Продукт монтирует полосу и **один** мобильный вид —
+они взаимоисключающие. `logoUrl` принимает только полоса.
 
 - `placement` обязателен и умолчания не имеет: умолчание `rail` при забытой
   передаче отрисовало бы второй рейл внутри бокового меню, и проверка типов

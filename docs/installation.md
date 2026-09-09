@@ -42,7 +42,7 @@ npm install @verdeect/identity-nav-vue
 ## Пять входов
 
 ```ts
-import { CrossServiceNav, UserMenu } from '@verdeect/identity-nav-vue';
+import { CrossServiceRail, CrossServiceMenu, UserMenu } from '@verdeect/identity-nav-vue';
 import { useIdentity } from '@verdeect/identity-nav-vue/inertia';
 import { useIdentityView } from '@verdeect/identity-nav-vue/identity';
 import { loginAs } from '@verdeect/identity-nav-vue/playwright';
@@ -54,7 +54,7 @@ import { loginAs } from '@verdeect/identity-nav-vue/playwright';
 
 | Вход | Содержимое | Зависимости |
 | --- | --- | --- |
-| `.` | `CrossServiceNav`, `UserMenu` и их типы | `vue` |
+| `.` | `CrossServiceRail`, `CrossServiceMenu`, `CrossServiceBar`, `UserMenu` и их типы | `vue` |
 | `./style.css` | визуальный слой | — |
 | `./identity` | вывод состояния рейла и профиля, типы | `vue` |
 | `./inertia` | адаптер над `usePage()` | `vue`, `@inertiajs/vue3` |
