@@ -1,6 +1,6 @@
 {
     "name": "@verdeect/identity-nav-vue",
-    "version": "0.3.0",
+    "version": "0.4.0",
     "description": "Vue 3 integration with Verdeect Identity Service: global navigation rail, profile menu, rail state from backend props",
     "license": "MIT",
     "author": "Sergey Mihaylov",
