@@ -46,7 +46,8 @@
  *   --content-border-radius, --transition-duration
  *   --focus-ring-width, --focus-ring-style, --focus-ring-color
  *
- * Запасные значения взяты из макета `docs/Global Nav Bar.html`. Литералами
+ * Запасные значения взяты из макета `.ai-factory/artifacts/Global Nav Bar.html`
+ * (он лежит вне `docs/`, потому что `docs/` уезжает в npm-пакет). Литералами
  * они и остаются — зашитые вместо переменных, они перестали бы следовать
  * теме продукта.
  */
