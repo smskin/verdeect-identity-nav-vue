@@ -41,6 +41,7 @@ export const STRINGS: Readonly<
         openMenu: 'Открыть меню пользователя',
         logoAlt: 'Логотип установки',
         settings: 'Настройки',
+        allServices: 'Все сервисы',
     },
     en: {
         services: 'Services',
@@ -49,6 +50,7 @@ export const STRINGS: Readonly<
         openMenu: 'Open the user menu',
         logoAlt: 'Installation logo',
         settings: 'Settings',
+        allServices: 'All services',
     },
 };
 
