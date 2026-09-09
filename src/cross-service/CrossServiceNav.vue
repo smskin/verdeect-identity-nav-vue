@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { currentItemId } from './currentItem';
 import { translate } from './strings';
 import type { CrossServiceNavProps, NavItem } from './types';
@@ -20,11 +20,22 @@ import type { CrossServiceNavProps, NavItem } from './types';
  * готовым; сортировка «на всякий случай» разошлась бы с тем, как сервер
  * упорядочивает пункты с равным `order`.
  *
- * **Обращение к отрисованному узлу здесь допустимо.** Известна ли иконка,
- * выясняется чтением псевдоэлемента `::before` собственного элемента рейла:
- * перечень идентификаторов компонент не ведёт, а рассинхрон версий набора
- * иконок PRD 9.4 называет штатным случаем. Это чтение своего же вывода,
- * а не сетевой запрос и не хранилище.
+ * **Иконка — изображение по подписанной ссылке, а не глиф шрифта** (PRD 9.4).
+ * Набора иконок нет: шрифт пришлось бы подключать в каждом продукте установки,
+ * а продукты о нём не знают. Вместе с набором ушло и обращение к отрисованному
+ * узлу: прежде компонент читал псевдоэлемент `::before`, чтобы выяснить,
+ * нарисован ли глиф; теперь о неудаче сообщает событие `error` самой картинки.
+ *
+ * **Цвет иконки задаёт файл, а не тон рейла.** Глиф шрифта наследовал `color`,
+ * изображение — нет. Способ, сохраняющий наследование (маска по силуэту),
+ * отклонён: он превратил бы многоцветную иконку в силуэт, а предполагать
+ * одноцветность загруженного администратором файла оснований нет
+ * (PRD навигации 7.1). За читаемость на тоне рейла отвечает администратор
+ * установки.
+ *
+ * **Пустой `iconUrl` равнозначен неудачной загрузке.** Так парная библиотека
+ * читает ответ установки, ещё не перешедшей на загружаемые иконки; пункт
+ * показывается первой буквой имени, а рейл целиком работоспособен.
  *
  * Порогов ширины здесь нет: какое из двух представлений показать, решает
  * таблица стилей продукта по атрибуту `data-placement`.
@@ -42,10 +53,8 @@ const openedAtMount = ref('');
 /** Логотип показывается по факту загрузки; места под него не резервируется. */
 const logoShown = ref(false);
 
-/** Пункты, для иконок которых шрифт не даёт глифа (PRD 9.4). */
-const glyphless = ref<ReadonlySet<string>>(new Set());
-
-const root = ref<HTMLElement | null>(null);
+/** Пункты, иконка которых не загрузилась (PRD 9.4). */
+const failed = ref<ReadonlySet<string>>(new Set());
 
 const t = (key: string): string => translate(props.locale, key);
 
@@ -67,55 +76,31 @@ function nameOf(item: NavItem): string {
     return item.name[props.locale] ?? Object.values(item.name)[0] ?? '';
 }
 
-/** Заглушка вместо неизвестной иконки — первая буква имени (PRD 9.4). */
+/** Заглушка вместо не загрузившейся иконки — первая буква имени (PRD 9.4). */
 function initialOf(item: NavItem): string {
     return nameOf(item).slice(0, 1).toUpperCase();
 }
 
-/**
- * Отмечает пункты, чья иконка не нарисована.
- *
- * Признак отсутствия глифа — пустое либо отсутствующее `content`
- * псевдоэлемента: правило `.pi-<имя>:before` объявлено таблицей стилей
- * набора, и для незнакомого идентификатора его просто нет.
- */
-function detectGlyphless(): void {
-    const host = root.value;
+/** Показывать ли заглушку: ссылки нет либо изображение не загрузилось. */
+function stubbed(item: NavItem): boolean {
+    return item.iconUrl === '' || failed.value.has(item.id);
+}
 
-    if (host === null) {
-        return;
-    }
-
-    const missing = new Set<string>();
-
-    for (const item of props.items) {
-        const icon = host.querySelector(`[data-icon-for="${item.id}"]`);
-
-        if (icon === null) {
-            continue;
-        }
-
-        const glyph = getComputedStyle(icon, '::before').content;
-
-        if (glyph === '' || glyph === 'none' || glyph === 'normal') {
-            missing.add(item.id);
-        }
-    }
-
-    glyphless.value = missing;
+/** Помечает пункт, изображение которого браузер не загрузил. */
+function onIconError(item: NavItem): void {
+    failed.value = new Set(failed.value).add(item.id);
 }
 
 onMounted(() => {
     openedAtMount.value = window.location.href;
-    detectGlyphless();
 });
 
 watch(
     () => props.items,
-    async () => {
-        glyphless.value = new Set();
-        await nextTick();
-        detectGlyphless();
+    () => {
+        // Новый состав пунктов — новая попытка загрузки: прежние неудачи
+        // относились к прежним ссылкам, а те уже сменились.
+        failed.value = new Set();
     },
 );
 </script>
@@ -123,7 +108,6 @@ watch(
 <template>
     <nav
         v-if="items.length > 0"
-        ref="root"
         class="cross-service-nav"
         :class="`cross-service-nav--${placement}`"
         :data-placement="placement"
@@ -168,18 +152,20 @@ watch(
                     "
                 >
                     <span
-                        v-if="glyphless.has(item.id)"
+                        v-if="stubbed(item)"
                         class="cross-service-nav__stub"
                         aria-hidden="true"
                         >{{ initialOf(item) }}</span
                     >
-                    <i
+                    <img
                         v-else
                         class="cross-service-nav__icon"
-                        :class="['pi', item.icon]"
-                        :data-icon-for="item.id"
+                        :src="item.iconUrl"
+                        alt=""
                         aria-hidden="true"
-                    ></i>
+                        :data-icon-for="item.id"
+                        @error="onIconError(item)"
+                    />
 
                     <span class="cross-service-nav__label">{{
                         nameOf(item)

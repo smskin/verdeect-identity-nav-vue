@@ -177,7 +177,15 @@ onUnmounted(unlisten);
                 data-testid="user-menu-profile"
                 @click="close"
             >
-                <i class="pi pi-user" aria-hidden="true"></i>
+                <svg
+                    class="cross-service-user__glyph"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <path
+                        d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0 2c-4 0-7 2.2-7 5v1h14v-1c0-2.8-3-5-7-5Z"
+                    />
+                </svg>
                 {{ t('profile') }}
             </a>
 
@@ -199,7 +207,15 @@ onUnmounted(unlisten);
                 data-testid="user-menu-logout"
                 @click="requestLogout"
             >
-                <i class="pi pi-sign-out" aria-hidden="true"></i>
+                <svg
+                    class="cross-service-user__glyph"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <path
+                        d="M10 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4v-2H6V6h4V4Zm6.2 3.4-1.4 1.4L17 11H9v2h8l-2.2 2.2 1.4 1.4L21 12l-4.8-4.6Z"
+                    />
+                </svg>
                 {{ t('logout') }}
             </button>
         </div>

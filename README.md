@@ -31,8 +31,8 @@ npm install @verdeect/identity-nav-vue
 Три шага, без которых рейл не заработает:
 
 1. Импортировать стили: `@import '@verdeect/identity-nav-vue/style.css'`
-   и подключить шрифт PrimeIcons
-   ([Установка](docs/installation.md)).
+   ([Установка](docs/installation.md)). Шрифта иконок пакет не требует:
+   иконки пунктов приходят файлами, значки блока пользователя встроены.
 2. Смонтировать **два** экземпляра `CrossServiceNav` — `placement="rail"`
    и `placement="overlay"` — и передать в оба `currentUrl`
    ([Встраивание](docs/embedding.md)).

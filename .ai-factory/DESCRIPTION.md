@@ -131,7 +131,7 @@
 
 Парная composer-библиотека — `verdeect/identity-laravel`
 (`github.com/smskin/verdeect-identity-laravel`, локально
-`../identity-integration-php`). Между библиотеками контракт по данным рейла и
+`../verdeect-identity-laravel`). Между библиотеками контракт по данным рейла и
 профиля (`NavItem` ↔ `NavigationData`, `IdentityProfile` ↔ `UserProfile`),
 который в двух репозиториях расходится молча; договорённость — согласованный
 minor.
