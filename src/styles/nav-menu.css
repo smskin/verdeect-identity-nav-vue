@@ -1,0 +1,67 @@
+/*
+ * Блок внутри выдвижного меню продукта — `CrossServiceMenu` (мобильный вид 1).
+ *
+ * Геометрии контейнера здесь нет: ширину задаёт панель хозяина. Пункты — строки
+ * с подписями, потому что ширина для них есть; заголовок и разделитель
+ * принадлежат этому виду и в других не рисуются.
+ *
+ * Разделитель — **шов**: после него продукт продолжает своими разделами.
+ */
+
+/* --------------------------------------------------------------------------
+ * Оверлей: то же содержимое внутри выдвижной панели продукта
+ *
+ * Геометрии рейла у него нет: ширину задаёт панель, в которую его поместили.
+ * -------------------------------------------------------------------------- */
+/*
+ * Кадр 5a: строка вместо столбца, риска выражена левой границей — рейловый
+ * псевдоэлемент здесь не годится, потому что строка занимает всю ширину панели.
+ */
+
+.cross-service-nav--menu .cross-service-nav__link {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 10px;
+
+    width: 100%;
+    min-height: 48px;
+    padding: 9px 8px;
+    border-radius: 9px;
+    border-left: 3px solid transparent;
+}
+
+.cross-service-nav--menu .cross-service-nav__link--current {
+    border-left-color: var(--primary-color, #10b981);
+}
+
+.cross-service-nav--menu .cross-service-nav__label {
+    -webkit-line-clamp: 1;
+    width: auto;
+    font-size: 13px;
+    font-weight: 500;
+    text-align: left;
+}
+
+.cross-service-nav--menu
+    .cross-service-nav__link--current
+    .cross-service-nav__label {
+    font-weight: 600;
+}
+
+/* Заголовок блока — 10 px, разрядка, тон основного цвета (макет, кадр 2a). */
+
+.cross-service-nav__heading {
+    margin: 0 0 0.25rem;
+    padding: 6px 8px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--primary-color, #10b981);
+}
+
+.cross-service-nav__divider {
+    margin: 10px 4px;
+    border: 0;
+    border-top: 1px solid var(--surface-border, #eef2f6);
+}

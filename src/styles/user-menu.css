@@ -1,0 +1,186 @@
+/*
+ * Блок пользователя единого входа — `UserMenu`.
+ *
+ * К видам навигации отношения не имеет и живёт отдельным файлом именно
+ * поэтому: продукт монтирует его сам, рядом со своей шапкой.
+ */
+
+/* --------------------------------------------------------------------------
+ * Блок пользователя
+ * -------------------------------------------------------------------------- */
+
+.cross-service-user {
+    position: relative;
+    display: inline-flex;
+}
+
+/* Кадр 4b: отступ 4 px слева от аватара и 8 px справа, радиус 9. */
+
+.cross-service-user__trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 4px 8px 4px 4px;
+    color: var(--text-color, #1f2937);
+    background: none;
+    border: 0;
+    border-radius: 9px;
+    cursor: pointer;
+}
+
+.cross-service-user__trigger:hover,
+.cross-service-user__trigger--opened {
+    background-color: var(--surface-hover, #f4f6f8);
+}
+
+.cross-service-user__trigger:focus-visible {
+    outline: var(--focus-ring-width, 1px) var(--focus-ring-style, solid)
+        var(--focus-ring-color, currentcolor);
+    outline-offset: 2px;
+}
+
+.cross-service-user__avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 32px;
+    height: 32px;
+    flex: none;
+
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--primary-contrast-color, #fff);
+    background-color: var(--primary-color, #10b981);
+    border-radius: 9999px;
+}
+
+/* В триггере аватар мельче, чем в шапке меню (кадры 4a, 4b). */
+
+.cross-service-user__avatar--small {
+    width: 26px;
+    height: 26px;
+    font-size: 10px;
+}
+
+.cross-service-user__short-name {
+    font-size: 12.5px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* Шеврон разворачивается вверх, когда меню раскрыто (кадр 4b). */
+
+.cross-service-user__caret {
+    flex: none;
+    color: var(--text-color-secondary, #6b7280);
+    transition: transform var(--transition-duration, 0.2s);
+}
+
+.cross-service-user__trigger--opened .cross-service-user__caret {
+    transform: rotate(180deg);
+}
+
+.cross-service-user__menu {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    z-index: 1001;
+
+    display: flex;
+    flex-direction: column;
+
+    width: 236px;
+    max-width: 100vw;
+    padding: 8px;
+
+    background-color: var(--surface-overlay, #fff);
+    border: 1px solid var(--surface-border, #e5e7eb);
+    border-radius: var(--content-border-radius, 6px);
+    box-shadow:
+        0 4px 6px rgb(0 0 0 / 6%),
+        0 10px 20px rgb(0 0 0 / 10%);
+}
+
+/* Шапка меню некликабельна: она показывает, кто вошёл, а не ведёт никуда. */
+
+.cross-service-user__head {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+        'avatar name'
+        'avatar email';
+    gap: 3px 10px;
+    align-items: center;
+
+    padding: 8px 8px 12px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid var(--surface-border, #f3f4f6);
+}
+
+.cross-service-user__head .cross-service-user__avatar {
+    grid-area: avatar;
+}
+
+.cross-service-user__name {
+    grid-area: name;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text-color, #111827);
+}
+
+.cross-service-user__email {
+    grid-area: email;
+    font-size: 11px;
+    color: var(--text-color-secondary, #6b7280);
+    overflow-wrap: anywhere;
+}
+
+/* Пункт меню — 34 px высоты, иконка 15 px, радиус 8 (кадр 4b). */
+
+.cross-service-user__entry {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+
+    padding: 9px 8px;
+    font-size: 13px;
+    font-weight: 500;
+    text-align: left;
+    color: var(--text-color, #1f2937);
+    background: none;
+    border: 0;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/*
+ * Значки пунктов меню — встроенный SVG, а не глиф шрифта.
+ *
+ * Прежде здесь стояли классы `pi pi-*`, и продукт обязан был подключить
+ * PrimeIcons ради двух значков. Вместе с переходом рейла на загружаемые иконки
+ * это обязательство снято совсем: пакету шрифт больше не нужен ни для чего.
+ *
+ * `fill: currentColor` — почему цвет здесь наследуется, а у иконки пункта рейла
+ * нет: этот файл наш и заведомо одноцветный, тот загружает администратор.
+ */
+
+.cross-service-user__glyph {
+    flex: none;
+    width: 15px;
+    height: 15px;
+    fill: currentColor;
+    color: var(--text-color-secondary, #6b7280);
+}
+
+.cross-service-user__entry:hover {
+    background-color: var(--surface-hover, #f4f6f8);
+}
+
+.cross-service-user__entry:focus-visible {
+    outline: var(--focus-ring-width, 1px) var(--focus-ring-style, solid)
+        var(--focus-ring-color, currentcolor);
+    outline-offset: -2px;
+}

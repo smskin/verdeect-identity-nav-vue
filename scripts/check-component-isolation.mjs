@@ -34,7 +34,14 @@ import process from 'node:process';
 const ROOT = resolve(import.meta.dirname, '..');
 const CATALOG = 'src/cross-service';
 const CORE = 'src/identity';
-const STYLE = 'src/style.css';
+/**
+ * Визуальный слой: вход и файлы, которые он импортирует.
+ *
+ * Перечнем **не задаётся**, а вычисляется обходом: правила разъехались
+ * по видам навигации, и забытый в перечне файл выпал бы из условий 8 и 10
+ * молча — а именно они держат пороги ширины и шрифт иконок вне пакета.
+ */
+const STYLE_DIR = 'src';
 
 /**
  * Файлы каталога, которым разрешено обращаться к `document`, и основание.
@@ -180,9 +187,28 @@ for (const { path, code: contents } of catalog) {
 // --- Условие 8: порог принадлежит навигации продукта ---------------------------
 
 const THRESHOLDS = ['991', '992', '1024', 'matchMedia', 'innerWidth'];
+function stylesheets(directory) {
+    return readdirSync(join(ROOT, directory), { withFileTypes: true }).flatMap(
+        (entry) => {
+            const path = join(directory, entry.name);
+
+            if (entry.isDirectory()) {
+                return stylesheets(path);
+            }
+
+            return extname(entry.name) === '.css' ? [path] : [];
+        },
+    );
+}
+
 const styled = [
     ...catalog,
-    { path: STYLE, code: code(readFileSync(join(ROOT, STYLE), 'utf8')) },
+    ...stylesheets(STYLE_DIR)
+        .sort()
+        .map((path) => ({
+            path,
+            code: code(readFileSync(join(ROOT, path), 'utf8')),
+        })),
 ];
 
 for (const { path, code: contents } of styled) {
@@ -251,5 +277,6 @@ if (violations.length > 0) {
 }
 
 console.log(
-    `Каталог компонентов изолирован: ${catalog.length} файлов, ядро без Inertia.`,
+    `Каталог компонентов изолирован: ${catalog.length} файлов, ` +
+        `${styled.length - catalog.length} таблиц стилей, ядро без Inertia.`,
 );

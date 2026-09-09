@@ -7,486 +7,54 @@
  * входом `./style.css` вместе с каталогом компонентов, а `app.css`
  * принадлежит продукту.
  *
- * **Порогов ширины здесь нет ни одного — и заводить их нельзя.** Какое
- * из двух представлений рейла показать и когда прятать краткую форму имени,
- * решает таблица стилей продукта: порог принадлежит навигации продукта,
- * собственного мобильного режима у рейла нет (PRD 7.1). Продукт держит три
- * таких правила в своей таблице стилей рядом с порогом собственной
- * навигации, чтобы совпадение значений было видно глазом.
+ * **Этот файл — только оглавление.** Правил в нём нет ни одного: они лежат
+ * в `styles/` по видам навигации, чтобы правка полосы не листалась сквозь
+ * блок пользователя. Вход остаётся один: продукт по-прежнему пишет
+ * `@import '@verdeect/identity-nav-vue/style.css'` и о раскладке внутри
+ * не знает.
+ *
+ * **Порядок импортов закреплён и значим.** Переменные нужны всем, общие
+ * правила пунктов — видам, а тёмная тема идёт последней: её правила той же
+ * избирательности, что и обычные, и исход решает порядок. Перестановка строк
+ * ниже — правка поведения, а не раскладки.
+ *
+ * Правила видов **уточняют** общие своей избирательностью
+ * (`.cross-service-nav--rail .cross-service-nav__link` сильнее
+ * `.cross-service-nav__link`), а не заменяют их: разделение по файлам каскад
+ * не разделило. Перенося правило между файлами, проверяйте избирательность,
+ * а не только место.
+ *
+ * **Порогов ширины здесь нет ни одного — и заводить их нельзя.** Какой
+ * из трёх видов показать и когда прятать краткую форму имени, решает таблица
+ * стилей продукта: порог принадлежит навигации продукта, собственного
+ * мобильного режима у рейла нет (PRD 7.1). Продукт держит эти правила
+ * в своей таблице рядом с порогом собственной навигации, чтобы совпадение
+ * значений было видно глазом.
  *
  * **Видимость рейла не связана с состоянием оболочки продукта** (PRD 7.1):
- * ни один селектор ниже не опирается на классы `.layout-wrapper`. Свернув
+ * ни один селектор не опирается на классы `.layout-wrapper`. Свернув
  * навигацию продукта, пользователь рейла не теряет.
  *
- * Переменные оформления, на которые опирается файл. Их задаёт продукт;
+ * Переменные оформления, на которые опираются файлы. Их задаёт продукт;
  * там, где переменной может не быть, указано запасное значение:
  *   --surface-card, --surface-overlay, --surface-border, --surface-hover
+ *   --surface-ground, --surface-active
  *   --text-color, --text-color-secondary
  *   --primary-color, --primary-contrast-color
+ *   --highlight-background, --highlight-color
+ *   --tooltip-background, --tooltip-color
  *   --content-border-radius, --transition-duration
  *   --focus-ring-width, --focus-ring-style, --focus-ring-color
- */
-
-/*
- * Ширина рейла объявлена переменной и живёт в одном месте: её читает и оболочка
- * продукта, чтобы сдвинуть свою навигацию вправо ровно на неё. Переменная
- * переезжает вместе с каталогом; число, повторённое в двух файлах, разошлось бы.
- */
-:root {
-    --cross-service-rail-width: 68px;
-}
-
-/* --------------------------------------------------------------------------
- * Рейл
- * -------------------------------------------------------------------------- */
-.cross-service-nav--rail {
-    /*
-     * **Рейл занимает всю высоту окна, а не область под шапкой** (макет 2a):
-     * он — самый внешний слой интерфейса, и шапка продукта начинается правее
-     * него. Высота чужой шапки здесь неизвестна и знать её нельзя: это была бы
-     * та же ошибка, что порог узкого экрана, — знание о хозяине внутри
-     * переносимого каталога. Подвинуть свою шапку — обязанность продукта.
-     *
-     * `z-index` выше боковой навигации Sakai (у неё 999): на узкой полосе её
-     * выдвижение иначе накрыло бы рейл краем.
-     */
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1000;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    /*
-     * Числа макета (кадр 2a) — пикселями, а не в `rem`: корень оболочки
-     * Sakai равен 14px, и `0.5rem` дало бы 7px вместо восьми, а `0.75rem` —
-     * 10.5px вместо двенадцати. Полоса собрана из точных величин, и доля
-     * от чужого корня к ним не приводит.
-     */
-    gap: 8px;
-
-    width: var(--cross-service-rail-width);
-    height: 100vh;
-    padding: 12px 0;
-
-    background-color: var(--surface-card, #fff);
-    border-right: 1px solid var(--surface-border, #e5e7eb);
-
-    /*
-     * Пунктов может оказаться больше, чем помещается по высоте: рейл
-     * прокручивается, и ни один пункт не прячется (PRD 7.2). Режимов
-     * «только иконки» и «Ещё» не предусмотрено.
-     */
-    overflow-y: auto;
-    overscroll-behavior: contain;
-}
-
-.cross-service-nav__logo {
-    flex: none;
-    width: 32px;
-    height: 32px;
-    margin-bottom: 8px;
-    border-radius: 9px;
-    object-fit: contain;
-}
-
-.cross-service-nav__list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-/*
- * Шаг между пунктами — 8 px (кадр 2a).
  *
- * Задаёт его **этот список, а не полоса**: пункты лежат внутри него, и `gap`
- * полосы разделяет лишь логотип со списком целиком. Полагаясь на `gap` полосы,
- * пункты оказывались бы в 3.5 px друг от друга — доля `0.25rem` от корня
- * оболочки Sakai в 14 px.
+ * Запасные значения взяты из макета `docs/Global Nav Bar.html`. Литералами
+ * они и остаются — зашитые вместо переменных, они перестали бы следовать
+ * теме продукта.
  */
-.cross-service-nav--rail .cross-service-nav__list {
-    gap: 8px;
-}
 
-/*
- * Геометрия пункта — кадр 2c: 56 px в полосе 68 px, отступ 9 px по вертикали.
- * Шаг между пунктами задан списком выше. Клик-зона — вся плашка.
- */
-.cross-service-nav__link {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
-
-    width: 56px;
-    padding: 9px 0;
-    color: var(--text-color-secondary, #6b7280);
-    border-radius: 10px;
-    transition: background-color var(--transition-duration, 0.2s);
-}
-
-/*
- * В полосе пункт уже её и центрируется: риска рисуется левее пункта, и
- * прижатый к краю пункт увёл бы её за пределы полосы.
- */
-.cross-service-nav--rail .cross-service-nav__link {
-    margin: 0 auto;
-}
-
-.cross-service-nav__link:hover {
-    background-color: var(--surface-hover, #f4f6f8);
-    color: var(--text-color, #4b5563);
-}
-
-.cross-service-nav__link:focus-visible {
-    outline: var(--focus-ring-width, 1px) var(--focus-ring-style, solid)
-        var(--focus-ring-color, currentcolor);
-    outline-offset: 2px;
-}
-
-/*
- * Текущий пункт — кадр 2c: подсветка плашки, зелёная плашка иконки и риска
- * 3 px у левого края. Цвета берутся переменными оформления там, где они есть:
- * решение макета — «активный пункт как в сайдбаре Sakai», то есть тем же
- * токеном, а не собственным набором значений.
- */
-.cross-service-nav__link--current {
-    background-color: var(--highlight-background, #ecfdf5);
-    color: var(--highlight-color, #047857);
-    font-weight: 600;
-}
-
-/* Риска рисуется псевдоэлементом: отдельного узла разметке она не стоит. */
-.cross-service-nav--rail .cross-service-nav__link--current::before {
-    content: '';
-    position: absolute;
-    left: -4px;
-    top: 12px;
-    bottom: 12px;
-    width: 3px;
-    border-radius: 2px;
-    background-color: var(--primary-color, #10b981);
-}
-
-/*
- * Плашка иконки — 26 px, радиус 8 (кадр 2c).
- *
- * **Селектор остался двухклассовым.** Он был заведён против `.pi { display:
- * inline-block }` набора PrimeIcons: та же сила каскада, и исход решал порядок
- * загрузки файлов. Набора у рейла больше нет, но правило сохранено намеренно —
- * продукт вправе подключать PrimeIcons ради собственной навигации, и одноклассовый
- * селектор снова стал бы зависеть от порядка сборки. Цена — один лишний класс
- * в селекторе; выигрыш — независимость от чужой таблицы стилей.
- */
-.cross-service-nav .cross-service-nav__icon,
-.cross-service-nav .cross-service-nav__stub {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 26px;
-    height: 26px;
-    flex: none;
-
-    line-height: 1;
-    background-color: var(--surface-ground, #eef2f6);
-    border-radius: 8px;
-}
-
-/*
- * Иконка — изображение, а не глиф (PRD навигации 9.4).
- *
- * `object-fit: contain` вписывает файл любых пропорций в плашку целиком;
- * поле в 4 px не даёт квадратной иконке упереться в её края.
- *
- * **Цвет здесь не задаётся.** Изображение его не наследует, и перекрасить файл,
- * не превратив многоцветную иконку в силуэт, нечем (PRD навигации 7.1).
- * За читаемость на тоне плашки отвечает администратор установки, выбирая файл.
- */
-.cross-service-nav img.cross-service-nav__icon {
-    padding: 4px;
-    object-fit: contain;
-}
-
-.cross-service-nav .cross-service-nav__stub {
-    color: var(--text-color-secondary, #6b7280);
-}
-
-.cross-service-nav .cross-service-nav__link--current .cross-service-nav__icon,
-.cross-service-nav .cross-service-nav__link--current .cross-service-nav__stub {
-    color: var(--primary-contrast-color, #fff);
-    background-color: var(--primary-color, #10b981);
-}
-
-/*
- * Заглушка не загрузившейся иконки — буква того же размера, что прежний глиф
- * (PRD 9.4).
- */
-.cross-service-nav .cross-service-nav__stub {
-    font-size: 0.6875rem;
-    font-weight: 700;
-}
-
-/*
- * Подпись — до двух строк с переносом по словам; не поместившееся усекается
- * многоточием, полное имя показывает атрибут `title` (PRD 7.1).
- */
-.cross-service-nav__label {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    overflow-wrap: break-word;
-
-    width: 100%;
-    font-size: 10px;
-    font-weight: 600;
-    line-height: 1.2;
-    text-align: center;
-}
-
-/* --------------------------------------------------------------------------
- * Оверлей: то же содержимое внутри выдвижной панели продукта
- *
- * Геометрии рейла у него нет: ширину задаёт панель, в которую его поместили.
- * -------------------------------------------------------------------------- */
-/*
- * Кадр 5a: строка вместо столбца, риска выражена левой границей — рейловый
- * псевдоэлемент здесь не годится, потому что строка занимает всю ширину панели.
- */
-.cross-service-nav--overlay .cross-service-nav__link {
-    flex-direction: row;
-    justify-content: flex-start;
-    gap: 10px;
-
-    width: 100%;
-    padding: 9px 8px;
-    border-radius: 9px;
-    border-left: 3px solid transparent;
-}
-
-.cross-service-nav--overlay .cross-service-nav__link--current {
-    border-left-color: var(--primary-color, #10b981);
-}
-
-.cross-service-nav--overlay .cross-service-nav__label {
-    -webkit-line-clamp: 1;
-    width: auto;
-    font-size: 13px;
-    font-weight: 500;
-    text-align: left;
-}
-
-.cross-service-nav--overlay
-    .cross-service-nav__link--current
-    .cross-service-nav__label {
-    font-weight: 600;
-}
-
-/* Заголовок блока — кадр 5a: 9 px, разрядка, тон основного цвета. */
-.cross-service-nav__heading {
-    margin: 0 0 0.25rem;
-    padding: 6px 8px;
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--primary-color, #10b981);
-}
-
-.cross-service-nav__divider {
-    margin: 10px 4px;
-    border: 0;
-    border-top: 1px solid var(--surface-border, #eef2f6);
-}
-
-/* --------------------------------------------------------------------------
- * Блок пользователя
- * -------------------------------------------------------------------------- */
-.cross-service-user {
-    position: relative;
-    display: inline-flex;
-}
-
-/* Кадр 4b: отступ 4 px слева от аватара и 8 px справа, радиус 9. */
-.cross-service-user__trigger {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-
-    padding: 4px 8px 4px 4px;
-    color: var(--text-color, #1f2937);
-    background: none;
-    border: 0;
-    border-radius: 9px;
-    cursor: pointer;
-}
-
-.cross-service-user__trigger:hover,
-.cross-service-user__trigger--opened {
-    background-color: var(--surface-hover, #f4f6f8);
-}
-
-.cross-service-user__trigger:focus-visible {
-    outline: var(--focus-ring-width, 1px) var(--focus-ring-style, solid)
-        var(--focus-ring-color, currentcolor);
-    outline-offset: 2px;
-}
-
-.cross-service-user__avatar {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 32px;
-    height: 32px;
-    flex: none;
-
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--primary-contrast-color, #fff);
-    background-color: var(--primary-color, #10b981);
-    border-radius: 9999px;
-}
-
-/* В триггере аватар мельче, чем в шапке меню (кадры 4a, 4b). */
-.cross-service-user__avatar--small {
-    width: 26px;
-    height: 26px;
-    font-size: 10px;
-}
-
-.cross-service-user__short-name {
-    font-size: 12.5px;
-    font-weight: 500;
-    white-space: nowrap;
-}
-
-/* Шеврон разворачивается вверх, когда меню раскрыто (кадр 4b). */
-.cross-service-user__caret {
-    flex: none;
-    color: var(--text-color-secondary, #6b7280);
-    transition: transform var(--transition-duration, 0.2s);
-}
-
-.cross-service-user__trigger--opened .cross-service-user__caret {
-    transform: rotate(180deg);
-}
-
-.cross-service-user__menu {
-    position: absolute;
-    top: calc(100% + 0.5rem);
-    right: 0;
-    z-index: 1001;
-
-    display: flex;
-    flex-direction: column;
-
-    width: 236px;
-    max-width: 100vw;
-    padding: 8px;
-
-    background-color: var(--surface-overlay, #fff);
-    border: 1px solid var(--surface-border, #e5e7eb);
-    border-radius: var(--content-border-radius, 6px);
-    box-shadow:
-        0 4px 6px rgb(0 0 0 / 6%),
-        0 10px 20px rgb(0 0 0 / 10%);
-}
-
-/* Шапка меню некликабельна: она показывает, кто вошёл, а не ведёт никуда. */
-.cross-service-user__head {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    grid-template-areas:
-        'avatar name'
-        'avatar email';
-    gap: 3px 10px;
-    align-items: center;
-
-    padding: 8px 8px 12px;
-    margin-bottom: 6px;
-    border-bottom: 1px solid var(--surface-border, #f3f4f6);
-}
-
-.cross-service-user__head .cross-service-user__avatar {
-    grid-area: avatar;
-}
-
-.cross-service-user__name {
-    grid-area: name;
-    font-size: 12.5px;
-    font-weight: 600;
-    color: var(--text-color, #111827);
-}
-
-.cross-service-user__email {
-    grid-area: email;
-    font-size: 11px;
-    color: var(--text-color-secondary, #6b7280);
-    overflow-wrap: anywhere;
-}
-
-/* Пункт меню — 34 px высоты, иконка 15 px, радиус 8 (кадр 4b). */
-.cross-service-user__entry {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-
-    padding: 9px 8px;
-    font-size: 13px;
-    font-weight: 500;
-    text-align: left;
-    color: var(--text-color, #1f2937);
-    background: none;
-    border: 0;
-    border-radius: 8px;
-    cursor: pointer;
-}
-
-/*
- * Значки пунктов меню — встроенный SVG, а не глиф шрифта.
- *
- * Прежде здесь стояли классы `pi pi-*`, и продукт обязан был подключить
- * PrimeIcons ради двух значков. Вместе с переходом рейла на загружаемые иконки
- * это обязательство снято совсем: пакету шрифт больше не нужен ни для чего.
- *
- * `fill: currentColor` — почему цвет здесь наследуется, а у иконки пункта рейла
- * нет: этот файл наш и заведомо одноцветный, тот загружает администратор.
- */
-.cross-service-user__glyph {
-    flex: none;
-    width: 15px;
-    height: 15px;
-    fill: currentColor;
-    color: var(--text-color-secondary, #6b7280);
-}
-
-.cross-service-user__entry:hover {
-    background-color: var(--surface-hover, #f4f6f8);
-}
-
-.cross-service-user__entry:focus-visible {
-    outline: var(--focus-ring-width, 1px) var(--focus-ring-style, solid)
-        var(--focus-ring-color, currentcolor);
-    outline-offset: -2px;
-}
-
-/* --------------------------------------------------------------------------
- * Тёмное оформление
- *
- * Класс `.app-dark` ставит переключатель темы продукта; здесь правятся только
- * те значения, которые не приходят переменными.
- * -------------------------------------------------------------------------- */
-.app-dark .cross-service-nav--rail,
-.app-dark .cross-service-user__menu {
-    box-shadow: none;
-}
+@import './styles/tokens.css';
+@import './styles/nav-shared.css';
+@import './styles/nav-rail.css';
+@import './styles/nav-menu.css';
+@import './styles/nav-bar.css';
+@import './styles/user-menu.css';
+@import './styles/dark.css';

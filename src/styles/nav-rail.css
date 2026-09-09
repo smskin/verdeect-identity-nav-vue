@@ -1,0 +1,159 @@
+/*
+ * Полоса слева — `CrossServiceRail` (десктоп).
+ *
+ * Здесь всё, что принадлежит только ей: геометрия полосы и логотипа, кнопка
+ * 44×44, подсказка при наведении и распорка перед шестерёнкой. Подписи пунктов
+ * в полосе скрыты — их место занял узел подсказки.
+ *
+ * Порогов ширины здесь нет: когда показывать полосу, решает продукт.
+ */
+
+/* --------------------------------------------------------------------------
+ * Рейл
+ * -------------------------------------------------------------------------- */
+
+.cross-service-nav--rail {
+    /*
+     * **Рейл занимает всю высоту окна, а не область под шапкой** (макет 2a):
+     * он — самый внешний слой интерфейса, и шапка продукта начинается правее
+     * него. Высота чужой шапки здесь неизвестна и знать её нельзя: это была бы
+     * та же ошибка, что порог узкого экрана, — знание о хозяине внутри
+     * переносимого каталога. Подвинуть свою шапку — обязанность продукта.
+     *
+     * `z-index` выше боковой навигации Sakai (у неё 999): на узкой полосе её
+     * выдвижение иначе накрыло бы рейл краем.
+     */
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /*
+     * Числа макета — пикселями, а не в `rem`: корень оболочки Sakai равен
+     * 14px, и доля от чужого корня дала бы не то число. Полоса собрана
+     * из точных величин.
+     */
+    gap: 4px;
+
+    width: var(--cross-service-rail-width);
+    height: 100vh;
+    padding: 12px 0;
+
+    background-color: var(--surface-card, #fff);
+    border-right: 1px solid var(--surface-border, #e5e7eb);
+
+    /*
+     * Пунктов может оказаться больше, чем помещается по высоте: рейл
+     * прокручивается, и ни один пункт не прячется (PRD 7.2). Режимов
+     * «только иконки» и «Ещё» не предусмотрено.
+     */
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.cross-service-nav__logo {
+    flex: none;
+    width: 44px;
+    height: 44px;
+    margin-bottom: 16px;
+    border-radius: 10px;
+    object-fit: contain;
+}
+
+/*
+ * Шаг между пунктами — 4 px.
+ *
+ * Задаёт его **этот список, а не полоса**: пункты лежат внутри него, и `gap`
+ * полосы разделяет лишь логотип со списком целиком. Полагаясь на `gap` полосы,
+ * пункты оказывались бы в 3.5 px друг от друга — доля `0.25rem` от корня
+ * оболочки Sakai в 14 px.
+ */
+
+.cross-service-nav--rail .cross-service-nav__list {
+    gap: 4px;
+}
+
+/*
+ * Кнопка полосы — 44×44, радиус 10 (макет, кадр 1a).
+ *
+ * Пункт уже полосы и центрируется в ней: 44 в 64 оставляет по 10 с каждой
+ * стороны. Подписи здесь нет — имя показывает подсказка при наведении.
+ */
+
+.cross-service-nav--rail .cross-service-nav__link {
+    justify-content: center;
+    gap: 0;
+
+    width: 44px;
+    height: 44px;
+    margin: 0 auto;
+}
+
+/* Подпись в полосе не рисуется: её место занял узел подсказки. */
+
+.cross-service-nav--rail .cross-service-nav__label {
+    display: none;
+}
+
+.cross-service-nav--rail .cross-service-nav__tip {
+    display: block;
+    position: absolute;
+    left: 54px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+
+    padding: 6px 10px;
+    border-radius: 7px;
+    white-space: nowrap;
+
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.2;
+
+    background-color: var(--tooltip-background, #1b1b1b);
+    color: var(--tooltip-color, #fff);
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.cross-service-nav--rail .cross-service-nav__link:hover .cross-service-nav__tip,
+.cross-service-nav--rail
+    .cross-service-nav__link:focus-visible
+    .cross-service-nav__tip {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Уголок подсказки — псевдоэлементом: отдельного узла разметке он не стоит. */
+
+.cross-service-nav--rail .cross-service-nav__tip::before {
+    content: '';
+    position: absolute;
+    left: -4px;
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    margin-top: -4px;
+    background-color: inherit;
+    transform: rotate(45deg);
+}
+
+/*
+ * Распорка перед шестерёнкой: прижимает её к низу полосы.
+ *
+ * Отдельным узлом, а не `margin-top: auto` на самой шестерёнке: полоса
+ * прокручивается при переполнении, и авто-отступ на последнем элементе
+ * в прокручиваемом контейнере ведёт себя по-разному в зависимости от того,
+ * переполнена ли она. Распорка нулевой высоты просто съедает остаток.
+ */
+
+.cross-service-nav__spacer {
+    flex: 1 1 auto;
+    min-height: 0;
+}
