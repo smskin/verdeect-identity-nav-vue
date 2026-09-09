@@ -19,6 +19,13 @@ test('разрешённый язык доходит до словаря', () =>
     expect(translate('ru', 'services')).toBe('Сервисы');
 });
 
+test('подпись шестерёнки объявлена на обоих языках', () => {
+    // Ключ отдельный от `profile`: «Профиль» живёт в блоке пользователя,
+    // а шестерёнка рейла ведёт в настройки установки.
+    expect(translate('ru', 'settings')).toBe('Настройки');
+    expect(translate('en', 'settings')).toBe('Settings');
+});
+
 test('неизвестный язык отступает к первому объявленному', () => {
     const fallback = Object.keys(STRINGS)[0];
 

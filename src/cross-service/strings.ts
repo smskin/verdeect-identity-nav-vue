@@ -40,6 +40,7 @@ export const STRINGS: Readonly<
         logout: 'Выход',
         openMenu: 'Открыть меню пользователя',
         logoAlt: 'Логотип установки',
+        settings: 'Настройки',
     },
     en: {
         services: 'Services',
@@ -47,6 +48,7 @@ export const STRINGS: Readonly<
         logout: 'Sign out',
         openMenu: 'Open the user menu',
         logoAlt: 'Installation logo',
+        settings: 'Settings',
     },
 };
 
