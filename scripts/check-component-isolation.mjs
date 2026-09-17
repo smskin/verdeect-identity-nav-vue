@@ -20,6 +20,14 @@
  * и отделено от адаптера — утечка импорта обнаружилась бы иначе только
  * у потребителя, собравшего продукт не на Inertia.
  *
+ * Условиями 11 и 12 проверяется адаптер `src/public` — вход режима «Лендинг
+ * без бэкенда». **Ему одному в пакете разрешён сетевой запрос**: лендинг
+ * не имеет серверной части, и данные рейла некому получить, кроме браузера.
+ * Компоненты при этом по-прежнему получают данные props — запрос живёт
+ * в адаптере, как `usePage()` живёт в `src/inertia`. Всё прочее, что
+ * запрещено каталогу, адаптеру тоже запрещено: хранилища, консоль,
+ * `import.meta`, зашитые адреса. Ядро об адаптере знать не должно.
+ *
  * Исходники проверяются чтением, как и в наборе, из которого проверка
  * перенесена: поведение с перехватом проверяют браузерные сценарии
  * продуктов.
@@ -34,6 +42,7 @@ import process from 'node:process';
 const ROOT = resolve(import.meta.dirname, '..');
 const CATALOG = 'src/cross-service';
 const CORE = 'src/identity';
+const PUBLIC_ADAPTER = 'src/public';
 /**
  * Визуальный слой: вход и файлы, которые он импортирует.
  *
@@ -264,6 +273,58 @@ for (const { path, code: contents } of styled) {
     }
 }
 
+// --- Условие 11: адаптер публичной навигации ----------------------------------
+
+/*
+ * Сетевой запрос здесь разрешён — ради него адаптер и существует. Остальные
+ * запреты каталога действуют: кэш ответа живёт в установке и в браузере
+ * по `Cache-Control`, а не в хранилище страницы; журнала в пакете нет;
+ * адрес установки приходит опцией.
+ */
+const PUBLIC_ALLOWED_IMPORTS = ['vue', '../identity', '../cross-service'];
+
+for (const path of sources(PUBLIC_ADAPTER).sort()) {
+    const contents = code(readFileSync(join(ROOT, path), 'utf8'));
+
+    for (const [, specifier] of contents.matchAll(IMPORT)) {
+        if (!specifier.startsWith('./') && !PUBLIC_ALLOWED_IMPORTS.includes(specifier)) {
+            violations.push(
+                `${path}: ${specifier} — адаптер публичной навигации зависит только от vue и ядра`,
+            );
+        }
+    }
+
+    for (const needle of ['localStorage', 'sessionStorage', 'indexedDB', 'document.cookie']) {
+        if (contents.includes(needle)) {
+            violations.push(`${path}: ${needle} — кэш ответа живёт в установке и в браузере, а не в хранилище`);
+        }
+    }
+
+    if (contents.includes('console.')) {
+        violations.push(`${path}: console — журнала в пакете нет, причина отказа возвращается данными`);
+    }
+
+    if (contents.includes('import.meta')) {
+        violations.push(`${path}: import.meta — адаптер не зависит от рантайма бандлера`);
+    }
+
+    if (/https?:\/\//i.test(contents)) {
+        violations.push(`${path}: адрес установки приходит опцией, а не зашит в код`);
+    }
+}
+
+// --- Условие 12: ядро не знает об адаптере публичной навигации -----------------
+
+for (const path of [...sources(CATALOG), ...sources(CORE)].sort()) {
+    const contents = code(readFileSync(join(ROOT, path), 'utf8'));
+
+    for (const [, specifier] of contents.matchAll(IMPORT)) {
+        if (specifier.includes('/public')) {
+            violations.push(`${path}: ${specifier} — ядро об адаптере публичной навигации не знает`);
+        }
+    }
+}
+
 // --- Отчёт ---------------------------------------------------------------------
 
 if (violations.length > 0) {
@@ -278,5 +339,6 @@ if (violations.length > 0) {
 
 console.log(
     `Каталог компонентов изолирован: ${catalog.length} файлов, ` +
-        `${styled.length - catalog.length} таблиц стилей, ядро без Inertia.`,
+        `${styled.length - catalog.length} таблиц стилей, ядро без Inertia, ` +
+        `адаптер публичной навигации: ${sources(PUBLIC_ADAPTER).length} файлов.`,
 );

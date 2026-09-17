@@ -1,7 +1,7 @@
 {
     "name": "@verdeect/identity-nav-vue",
     "version": "0.4.1",
-    "description": "Vue 3 integration with Verdeect Identity Service: global navigation rail, profile menu, rail state from backend props",
+    "description": "Vue 3 integration with Verdeect Identity Service: global navigation rail, profile menu, rail state from backend props, and a public rail for landing pages without a backend",
     "license": "MIT",
     "author": "Sergey Mihaylov",
     "homepage": "https://github.com/smskin/verdeect-identity-nav-vue#readme",
@@ -20,7 +20,8 @@
         "navigation",
         "sso",
         "user-menu",
-        "inertia"
+        "inertia",
+        "landing"
     ],
     "type": "module",
     "exports": {
@@ -28,6 +29,7 @@
         "./style.css": "./src/style.css",
         "./identity": "./src/identity/index.ts",
         "./inertia": "./src/inertia/index.ts",
+        "./public": "./src/public/index.ts",
         "./playwright": "./src/playwright/index.ts",
         "./package.json": "./package.json"
     },
