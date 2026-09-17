@@ -1,7 +1,22 @@
 # Установка и подключение
 
+Страница для **обоих режимов** подключения.
+
 Пакет поставляется **исходниками** — `.vue`, `.ts` и `.css` без шага сборки.
-Собирает их интерфейс продукта.
+Собирает их интерфейс потребителя.
+
+## Два режима
+
+| | Продукт установки | Лендинг без бэкенда |
+| --- | --- | --- |
+| Кто | Приложение с серверной частью и входом через identity | Статический SPA без серверной части и без входа |
+| Откуда данные | Бэкенд продукта (`verdeect/identity-laravel`) | Браузер напрямую из identity |
+| Вход пакета | `./inertia` либо `./identity` | `./public` |
+| Что показывается | Навигация по роли, шестерёнка настроек, `UserMenu` | Только гостевая навигация |
+| Условие на стороне identity | Служебный клиент с областью `navigation:read` | Включена публичная операция `GET /api/public/navigation` |
+
+Компоненты в обоих режимах одни и те же. Лендингу посвящена отдельная страница —
+[Лендинг без бэкенда](landing.md).
 
 ## Требования
 
@@ -39,12 +54,13 @@ npm install @verdeect/identity-nav-vue
 | `@inertiajs/vue3` | нет | только для входа `./inertia` |
 | `@playwright/test` | нет | только для входа `./playwright` |
 
-## Пять входов
+## Шесть входов
 
 ```ts
 import { CrossServiceRail, CrossServiceMenu, UserMenu } from '@verdeect/identity-nav-vue';
 import { useIdentity } from '@verdeect/identity-nav-vue/inertia';
 import { useIdentityView } from '@verdeect/identity-nav-vue/identity';
+import { usePublicNavigation } from '@verdeect/identity-nav-vue/public';
 import { loginAs } from '@verdeect/identity-nav-vue/playwright';
 ```
 
@@ -58,6 +74,7 @@ import { loginAs } from '@verdeect/identity-nav-vue/playwright';
 | `./style.css` | визуальный слой | — |
 | `./identity` | вывод состояния рейла и профиля, типы | `vue` |
 | `./inertia` | адаптер над `usePage()` | `vue`, `@inertiajs/vue3` |
+| `./public` | `usePublicNavigation`: гостевой состав из браузера, типы | `vue` |
 | `./playwright` | `loginAs`, `logout`, `credentialsFor` | `@playwright/test` |
 
 **Продукт на Inertia** берёт `.`, `./style.css` и `./inertia`.
@@ -65,6 +82,8 @@ import { loginAs } from '@verdeect/identity-nav-vue/playwright';
 и `@inertiajs/vue3` не ставит вовсе.
 **Сама установка** обходится входами `.` и `./style.css`: данные рейла она
 порождает, а не получает.
+**Лендинг без бэкенда** — `.`, `./style.css` и `./public`; ни
+`@inertiajs/vue3`, ни `@playwright/test` не ставит.
 
 ## Проверка подключения
 
@@ -80,6 +99,7 @@ npm run build                               # .vue из зависимости �
 
 ## Дальше
 
+- [Лендинг без бэкенда](landing.md) — режим лендинга целиком
 - [Встраивание компонентов](embedding.md) — девять обязанностей продукта
 - [Состояние рейла](state.md) — откуда компоненты берут данные
 - [Оформление](styling.md) — переменные и порог переключения
