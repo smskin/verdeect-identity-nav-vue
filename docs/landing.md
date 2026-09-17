@@ -146,12 +146,31 @@ const { crossService, locale, hasRail, currentUrl, failure } = usePublicNavigati
     [data-placement='rail'] {
         display: none;
     }
+
+    /* Только если выбрана CrossServiceBar. */
+    [data-placement='bottom'] {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1000;
+    }
+
+    .page--has-rail {
+        padding-bottom: calc(49px + env(safe-area-inset-bottom, 0px));
+    }
 }
 ```
 
 Полоса лежит `position: fixed` слева, поэтому содержимое страницы сдвигается
 на её ширину. Ширину берите **переменной**, а не числом. Правила держите
 **вне `@layer`**.
+
+**Плашку к низу экрана прижимаете вы.** `CrossServiceBar` объявлена
+`position: relative` и без правила выше встанет первой строкой страницы.
+Отступ снизу — её высота, 49 px плюс безопасная зона: без него конец страницы
+уйдёт под плашку. Подробности — в [Оформлении](styling.md#закрепление-плашки).
+Выбрав `CrossServiceMenu`, оба правила не пишите.
 
 ## Отказы
 
@@ -201,6 +220,8 @@ const { crossService, locale, hasRail, currentUrl, failure } = usePublicNavigati
 - [ ] `profileUrl` не передан, `UserMenu` не смонтирован
 - [ ] Правила переключения — со своим порогом и **вне `@layer`**
 - [ ] Содержимое сдвинуто на `--cross-service-rail-width`, пока рейл есть
+- [ ] Если выбрана `CrossServiceBar`: плашка закреплена у нижнего края,
+      содержимому дан отступ снизу на её высоту
 - [ ] `connect-src` и `img-src` включают origin установки, `img-src` — origin
       хранилища иконок
 
