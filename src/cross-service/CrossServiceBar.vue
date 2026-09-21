@@ -2,6 +2,11 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import NavIcon from './NavIcon.vue';
 import SettingsLink from './SettingsLink.vue';
+import {
+    occupyBarHeight,
+    releaseBarHeight,
+    reportBarHeight,
+} from './barHeight';
 import { translate } from './strings';
 import { useNavView } from './useNavView';
 import type { CrossServiceBarProps } from './types';
@@ -43,8 +48,20 @@ import type { CrossServiceBarProps } from './types';
  *
  * Подписей у кнопок нет, как и в полосе; имя показывает подсказка — а во
  * всплывающем списке подписи есть, ширина для них там своя.
+ *
+ * **Своё место на экране плашка знает, а место содержимого — нет.** Прижатие
+ * к нижнему краю одинаково у любого продукта, и повторять его в каждом
+ * репозитории незачем: плашка закрепляется сама, а оболочка, ставящая её
+ * по-своему, объявляет `positioning="static"`. Отступ содержимому по-прежнему
+ * отводит продукт — какой его узел прокручивается, пакет не знает, — но
+ * **высоту** для этого отступа сообщает плашка переменной оформления
+ * (`barHeight.ts`). Прежде продукты записывали её числом, и три источника
+ * одной величины разошлись: 49 px в одном, 48 в другом, третье значение
+ * в комментарии оформления.
  */
-const props = defineProps<CrossServiceBarProps>();
+const props = withDefaults(defineProps<CrossServiceBarProps>(), {
+    positioning: 'fixed',
+});
 
 const {
     currentId,
@@ -146,26 +163,76 @@ const measure = (): void => {
 };
 
 /**
- * Наблюдатель за шириной плашки.
+ * Сообщает оболочке продукта фактическую высоту плашки.
+ *
+ * Измерением, а не числом: высоту набирают кнопка, поля и безопасная зона
+ * устройства, а геометрию продукт вправе уточнить своей таблицей стилей —
+ * записанное число разошлось бы с уточнённой молча.
+ *
+ * **Ранний выход пересчёта строки здесь не годится.** Тот возвращается при
+ * нулевой ширине, потому что делить на неё нечего; здесь же нулевой размер
+ * и есть значащий случай — так выглядит плашка, погашенная медиазапросом
+ * продукта на широком экране. Оттого измерение высоты и стоит отдельно.
+ */
+const measureHeight = (): void => {
+    const rootElement = root.value;
+
+    /*
+     * Узла нет — высоты нет: при пустом составе пунктов плашка не рисуется
+     * вовсе, и отнимать место у содержимого не за что.
+     */
+    reportBarHeight(
+        rootElement === null ? 0 : rootElement.getBoundingClientRect().height,
+    );
+};
+
+/** Пересчёт при изменении размеров: вместимость строки и высота плашки. */
+const onResize = (): void => {
+    measure();
+    measureHeight();
+};
+
+/**
+ * Наблюдатель за размерами плашки.
  *
  * Ширина меняется не только поворотом телефона: оболочка вправе показать
- * и скрыть собственную колонку, и событие окна об этом не расскажет.
+ * и скрыть собственную колонку, и событие окна об этом не расскажет. Высота
+ * меняется вместе со свёрткой строки и с безопасной зоной устройства.
  */
 let observer: ResizeObserver | null = null;
 
-onMounted(() => {
-    measure();
+/**
+ * Подписывает наблюдателя на текущий корневой узел.
+ *
+ * Подписка повторяется при смене состава пунктов: при пустом составе узла
+ * нет вовсе (`v-if`), и наблюдать при монтировании было бы нечего — пункты,
+ * пришедшие позже, остались бы без наблюдения, а с ними и высота плашки.
+ */
+const observe = (): void => {
+    const rootElement = root.value;
 
-    observer = new ResizeObserver(measure);
-
-    if (root.value !== null) {
-        observer.observe(root.value);
+    if (observer === null || rootElement === null) {
+        return;
     }
+
+    observer.disconnect();
+    observer.observe(rootElement);
+};
+
+onMounted(() => {
+    occupyBarHeight();
+    onResize();
+
+    observer = new ResizeObserver(onResize);
+
+    observe();
 });
 
 onBeforeUnmount(() => {
     observer?.disconnect();
     observer = null;
+
+    releaseBarHeight();
 });
 
 watch(
@@ -173,7 +240,8 @@ watch(
     async (): Promise<void> => {
         shown.value = props.items.length;
         await nextTick();
-        measure();
+        observe();
+        onResize();
     },
 );
 
@@ -191,6 +259,7 @@ watch(collapsed, (value): void => {
         ref="root"
         class="cross-service-nav cross-service-nav--bar"
         data-placement="bottom"
+        :data-positioning="positioning"
         :aria-label="t('services')"
         data-testid="cross-service-nav"
         @keydown.escape="close"

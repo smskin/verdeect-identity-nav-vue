@@ -49,6 +49,7 @@ export type {
     CrossServiceRailProps,
     CrossServiceMenuProps,
     CrossServiceBarProps,
+    NavBarPositioning,
     NavItem,
     NavPlacement,
     ProductMenuItem,
