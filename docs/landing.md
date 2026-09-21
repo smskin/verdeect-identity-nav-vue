@@ -156,19 +156,11 @@ const { crossService, locale, hasRail, currentUrl, failure } = usePublicNavigati
     [data-placement='rail'] {
         display: none;
     }
+}
 
-    /* Только если выбрана CrossServiceBar. */
-    [data-placement='bottom'] {
-        position: fixed;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        z-index: 1000;
-    }
-
-    .page--has-rail {
-        padding-bottom: calc(49px + env(safe-area-inset-bottom, 0px));
-    }
+/* Только если выбрана CrossServiceBar; медиазапрос правилу не нужен. */
+.page {
+    padding-bottom: var(--cross-service-bar-height, 0px);
 }
 ```
 
@@ -176,11 +168,20 @@ const { crossService, locale, hasRail, currentUrl, failure } = usePublicNavigati
 на её ширину. Ширину берите **переменной**, а не числом. Правила держите
 **вне `@layer`**.
 
-**Плашку к низу экрана прижимаете вы.** `CrossServiceBar` объявлена
-`position: relative` и без правила выше встанет первой строкой страницы.
-Отступ снизу — её высота, 49 px плюс безопасная зона: без него конец страницы
-уйдёт под плашку. Подробности — в [Оформлении](styling.md#закрепление-плашки).
-Выбрав `CrossServiceMenu`, оба правила не пишите.
+**Плашка внизу закрепляется сама** — писать для неё правил не нужно, а
+написанные прежде удалите. От вас нужен отступ снизу у прокручиваемой вёрстки,
+иначе конец страницы уйдёт под плашку:
+
+```css
+.page {
+    padding-bottom: var(--cross-service-bar-height, 0px);
+}
+```
+
+Высоту плашка меряет и сообщает сама; запасной ноль обязателен — на широком
+экране, где плашки нет, переменной тоже нет. Подробности — в
+[Оформлении](styling.md#плашка-внизу-экрана). Выбрав `CrossServiceMenu`,
+это правило не пишите.
 
 ## Отказы
 
@@ -230,8 +231,9 @@ const { crossService, locale, hasRail, currentUrl, failure } = usePublicNavigati
 - [ ] `profileUrl` не передан, `UserMenu` не смонтирован
 - [ ] Правила переключения — со своим порогом и **вне `@layer`**
 - [ ] Содержимое сдвинуто на `--cross-service-rail-width`, пока рейл есть
-- [ ] Если выбрана `CrossServiceBar`: плашка закреплена у нижнего края,
-      содержимому дан отступ снизу на её высоту
+- [ ] Если выбрана `CrossServiceBar`: вёрстке дан отступ снизу
+      `var(--cross-service-bar-height, 0px)`, а плашка смонтирована в корень
+      страницы — закрепляет её пакет
 - [ ] `connect-src` и `img-src` включают origin установки, `img-src` — origin
       хранилища иконок
 
