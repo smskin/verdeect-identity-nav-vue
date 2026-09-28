@@ -1,6 +1,6 @@
 {
     "name": "@verdeect/identity-nav-vue",
-    "version": "0.4.6",
+    "version": "0.4.7",
     "description": "Vue 3 integration with Verdeect Identity Service: global navigation rail, profile menu, rail state from backend props, and a public rail for landing pages without a backend",
     "license": "MIT",
     "author": "Sergey Mihaylov",
@@ -31,6 +31,7 @@
         "./inertia": "./src/inertia/index.ts",
         "./public": "./src/public/index.ts",
         "./playwright": "./src/playwright/index.ts",
+        "./element": "./dist/element.js",
         "./package.json": "./package.json"
     },
     "publishConfig": {
@@ -38,6 +39,7 @@
     },
     "files": [
         "src",
+        "dist",
         "scripts",
         "docs",
         "README.md",
@@ -47,8 +49,10 @@
         "check:strings": "node scripts/check-component-strings.mjs",
         "check:isolation": "node scripts/check-component-isolation.mjs",
         "types:check": "vue-tsc --noEmit",
+        "build:element": "vite build --config vite.element.config.ts",
         "test:unit": "playwright test",
-        "test": "npm run check:strings && npm run check:isolation && npm run types:check && npm run test:unit"
+        "prepack": "npm run build:element",
+        "test": "npm run check:strings && npm run check:isolation && npm run types:check && npm run build:element && npm run test:unit"
     },
     "peerDependencies": {
         "@inertiajs/vue3": "^3.0.0",
@@ -67,7 +71,9 @@
         "@inertiajs/vue3": "^3.0.0",
         "@playwright/test": "^1.62.1",
         "@types/node": "^22.13.5",
+        "@vitejs/plugin-vue": "^6.0.9",
         "typescript": "^5.2.2",
+        "vite": "^8.3.1",
         "vue": "^3.5.13",
         "vue-tsc": "^2.2.4"
     }

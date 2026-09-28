@@ -1,0 +1,132 @@
+<script setup lang="ts">
+import { CrossServiceBar, CrossServiceRail } from '../cross-service';
+import type { IdentityNavElementProps } from './types';
+
+/**
+ * Корень пользовательского элемента `verdeect-identity-nav` — вход `./element`
+ * для продуктов не на Vue.
+ *
+ * **Вид выбирает продукт атрибутом `placement`, а не элемент шириной окна.**
+ * Порог принадлежит навигации продукта (контракт пакета, §3), и элемент
+ * не исключение: зашитый здесь, он разошёлся бы с порогом первого же
+ * потребителя. Смонтирован всегда ровно один вид — как и у продукта на Vue.
+ *
+ * **Вида `overlay` нет.** Блок `CrossServiceMenu` встраивается внутрь
+ * выдвижного меню продукта, а в чужую разметку теневой корень не попадает.
+ *
+ * **Скрытие — стандартный атрибут `hidden` на хосте**, им продукт прячет
+ * плашку при открытой экранной клавиатуре. Отдельного свойства нет: хост
+ * перестаёт отрисовываться, наблюдатель размеров плашки видит нулевую высоту,
+ * и `barHeight.ts` снимает `--cross-service-bar-height` сам — отступ
+ * содержимого у продукта исчезает без его участия.
+ *
+ * Своих правил вывода состояния здесь нет: абсолютный `currentUrl` передаёт
+ * продукт при каждом переходе, потому что SPA-потребитель элемент
+ * не перемонтирует.
+ */
+const props = withDefaults(defineProps<IdentityNavElementProps>(), {
+    placement: 'rail',
+    items: () => [],
+    locale: 'ru',
+    logoUrl: '',
+});
+</script>
+
+<template>
+    <CrossServiceBar
+        v-if="props.placement === 'bottom'"
+        :items="props.items"
+        :locale="props.locale"
+        :current-url="props.currentUrl"
+        :profile-url="props.profileUrl"
+    />
+
+    <CrossServiceRail
+        v-else
+        :items="props.items"
+        :locale="props.locale"
+        :current-url="props.currentUrl"
+        :profile-url="props.profileUrl"
+        :logo-url="props.logoUrl"
+        :logo-height="props.logoHeight"
+    />
+</template>
+
+<style>
+/*
+ * Визуальный слой встраивается в теневой корень целиком: в режиме
+ * пользовательского элемента стили этого файла становятся строкой, и Vite
+ * разворачивает импорт на месте. Стили продукта (сброс Tailwind и прочие)
+ * внутрь не проникают: рейл выглядит одинаково в любом продукте, как
+ * и задумано постоянными цветами навигации. Переменные, которые продукт
+ * вправе уточнить (слой плашки), наследуются сквозь теневую границу. Слой
+ * идёт первым, правила хоста после него — свои правила после пакетных.
+ */
+@import '../style.css';
+
+/*
+ * **Окружение продукта установки, воспроизведённое внутри теневого корня.**
+ *
+ * Визуальный слой написан в расчёте на страницу продукта на Sakai: глобальный
+ * сброс стилей (Tailwind preflight) и корневой шрифт 14px приходят оттуда,
+ * а не из пакета. Стили продукта в теневой корень не проникают, а
+ * наследуемые свойства проникают — чужие. Без этого блока у Open WebUI рейл
+ * получал `content-box` (полоса на 24px выше окна — шестерёнка уезжала вниз;
+ * на пиксель шире — светлая полоса у логотипа), шрифт 16px с межстрочным 1.5,
+ * светлый цвет текста тёмной темы и подчёркнутые ссылки.
+ *
+ * Значения сняты с identity-service — эталона экосистемы. Шрифт Instrument
+ * Sans элемент не загружает: сетевых обращений у пакета нет, и у продукта без
+ * этого шрифта сработает запасной из того же перечня.
+ */
+:host {
+    display: contents;
+
+    font-family:
+        'Instrument Sans',
+        ui-sans-serif,
+        system-ui,
+        sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.2;
+    color: #334155;
+}
+
+*,
+::before,
+::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: 0 solid;
+}
+
+a {
+    color: inherit;
+    text-decoration: inherit;
+}
+
+button {
+    font: inherit;
+    color: inherit;
+    background-color: transparent;
+}
+
+img,
+svg {
+    display: block;
+    vertical-align: middle;
+}
+
+/*
+ * Хост не занимает места: оба вида закреплены `position: fixed` и отводят
+ * себе место сами, а блочный хост внёс бы пустую строку в разметку продукта.
+ * Скрытый хост обязан исчезнуть целиком — на этом держится снятие переменной
+ * высоты плашки.
+ */
+
+:host([hidden]) {
+    display: none;
+}
+</style>

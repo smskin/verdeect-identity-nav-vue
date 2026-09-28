@@ -12,3 +12,6 @@ playwright-report/
 .claude/skills/aif
 .claude/skills/aif-*
 .claude/skills/vue-best-practices/
+
+# Собранный вход ./element: строится на prepack и в npm test, в git не хранится.
+dist/

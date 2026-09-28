@@ -28,6 +28,12 @@
  * запрещено каталогу, адаптеру тоже запрещено: хранилища, консоль,
  * `import.meta`, зашитые адреса. Ядро об адаптере знать не должно.
  *
+ * Условием 13 проверяется вход `src/element` — пользовательский элемент для
+ * продуктов не на Vue. **Ему одному в пакете разрешена сборка**: у такого
+ * продукта нет Vite, и исходники `.vue` ему взять нечем. Остальные запреты
+ * каталога действуют и там. Условие 14 держит исключение узким: входы,
+ * поставляемые исходниками, о собираемом входе не знают.
+ *
  * Исходники проверяются чтением, как и в наборе, из которого проверка
  * перенесена: поведение с перехватом проверяют браузерные сценарии
  * продуктов.
@@ -43,6 +49,7 @@ const ROOT = resolve(import.meta.dirname, '..');
 const CATALOG = 'src/cross-service';
 const CORE = 'src/identity';
 const PUBLIC_ADAPTER = 'src/public';
+const ELEMENT = 'src/element';
 /**
  * Визуальный слой: вход и файлы, которые он импортирует.
  *
@@ -337,6 +344,80 @@ for (const path of [...sources(CATALOG), ...sources(CORE)].sort()) {
     }
 }
 
+// --- Условие 13: вход пользовательского элемента --------------------------------
+
+/*
+ * `src/element` — единственный собираемый вход: его собирает Vite пакета,
+ * а не потребителя, и Vue уходит внутрь бандла. Разрешение касается только
+ * сборки. Всё, что запрещено каталогу, запрещено и здесь: данные приходят
+ * свойствами элемента, журнала нет, адреса и ключи не зашиты, а вид выбирает
+ * продукт атрибутом — порог ширины в элементе был бы тем же дефектом,
+ * что и в каталоге. `document` не нужен: переменную высоты плашки пишет
+ * `barHeight.ts` каталога.
+ *
+ * Разрешённые импорты — `vue`, файлы входа, компоненты каталога и визуальный
+ * слой (`@import` в стилях `.ce.vue`, разворачивается при сборке).
+ */
+const ELEMENT_ALLOWED_IMPORTS = ['vue', '../cross-service', '../style.css'];
+
+const ELEMENT_FORBIDDEN = [
+    ['fetch(', 'данные приходят свойствами элемента, а не запросом'],
+    ['XMLHttpRequest', 'данные приходят свойствами элемента, а не запросом'],
+    ['localStorage', 'кэш живёт на бэкенде продукта'],
+    ['sessionStorage', 'кэш живёт на бэкенде продукта'],
+    ['indexedDB', 'кэш живёт на бэкенде продукта'],
+    ['console.', 'журнала в пакете нет'],
+    ['import.meta', 'рантайм бандлера коду входа не нужен — сборка его подставила бы молча'],
+    ['document.', 'к документу обращается только barHeight.ts каталога'],
+    ...THRESHOLDS.map((needle) => [needle, 'вид выбирает продукт атрибутом placement, порог принадлежит ему']),
+];
+
+const element = sources(ELEMENT).sort();
+
+for (const path of element) {
+    const contents = code(readFileSync(join(ROOT, path), 'utf8'));
+
+    for (const [, specifier] of contents.matchAll(IMPORT)) {
+        if (!specifier.startsWith('./') && !ELEMENT_ALLOWED_IMPORTS.includes(specifier)) {
+            violations.push(
+                `${path}: ${specifier} — вход элемента зависит только от vue, каталога и визуального слоя`,
+            );
+        }
+    }
+
+    for (const [needle, message] of ELEMENT_FORBIDDEN) {
+        if (contents.includes(needle)) {
+            violations.push(`${path}: ${needle} — ${message}`);
+        }
+    }
+
+    if (/https?:\/\//i.test(contents)) {
+        violations.push(`${path}: адреса приходят свойствами элемента, а не зашиты в код`);
+    }
+
+    if (contents.toLowerCase().includes('token')) {
+        violations.push(`${path}: ключей доступа в браузере не бывает`);
+    }
+}
+
+// --- Условие 14: прочие входы о сборке не знают --------------------------------
+
+/*
+ * Исключение для сборки не должно расползтись: каталог, ядро и адаптеры
+ * поставляются исходниками, и ссылка из них на вход элемента притащила бы
+ * рантайм бандлера туда, где его нет. Импорт с суффиксом `?inline` —
+ * конструкция Vite и вне собираемого входа не нужен вовсе.
+ */
+for (const path of [...sources('src')].filter((path) => !path.startsWith(ELEMENT)).sort()) {
+    const contents = code(readFileSync(join(ROOT, path), 'utf8'));
+
+    for (const [, specifier] of contents.matchAll(IMPORT)) {
+        if (specifier.includes('/element') || specifier.includes('?')) {
+            violations.push(`${path}: ${specifier} — входы из исходников о собираемом входе не знают`);
+        }
+    }
+}
+
 // --- Отчёт ---------------------------------------------------------------------
 
 if (violations.length > 0) {
@@ -352,5 +433,6 @@ if (violations.length > 0) {
 console.log(
     `Каталог компонентов изолирован: ${catalog.length} файлов, ` +
         `${styled.length - catalog.length} таблиц стилей, ядро без Inertia, ` +
-        `адаптер публичной навигации: ${sources(PUBLIC_ADAPTER).length} файлов.`,
+        `адаптер публичной навигации: ${sources(PUBLIC_ADAPTER).length} файлов, ` +
+        `вход элемента: ${element.length} файлов.`,
 );
