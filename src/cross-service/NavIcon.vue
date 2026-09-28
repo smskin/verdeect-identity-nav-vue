@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
 
 /**
  * Иконка пункта либо заглушка первой буквой (PRD навигации 9.4).
@@ -46,6 +46,21 @@ import { computed } from 'vue';
  *
  * **Пустой `iconUrl` равнозначен неудачной загрузке.** Так парная библиотека
  * читает ответ установки, ещё не перешедшей на загружаемые иконки.
+ *
+ * **Неудача — не с первой ошибки: картинка перезагружается ещё дважды.**
+ * Прежде первая же ошибка переводила пункт на букву до смены состава пунктов:
+ * кратковременный сбой хранилища (обрыв соединения, 5xx, таймаут первого
+ * запроса) превращал иконку в «П» до перехода по странице, а в SPA без
+ * перемонтирования — до перезагрузки. Такие сбои у объектного хранилища
+ * штатны и проходят сами, поэтому пункт сдаётся лишь после третьей неудачи.
+ * Узел картинки пересоздаётся ключом: ошибочный ресурс браузер не переиспользует,
+ * и повтор уходит в хранилище заново.
+ *
+ * **Маска ставится только после загрузки картинки.** Маска и картинка грузили
+ * файл независимо, и сбой, задевший одну маску, оставлял узел без силуэта —
+ * без иконки и без заглушки разом. Теперь маска берёт файл, уже лежащий в кэше
+ * после удачной загрузки картинки, и два пути не расходятся. Цена — иконка
+ * проявляется на кадр позже картинки; до загрузки её и так нечем нарисовать.
  */
 interface Props {
     /** Подписанная ссылка на файл иконки; пустая — ссылки не пришло. */
@@ -69,7 +84,71 @@ const emit = defineEmits<{ error: [] }>();
  * бы записывать сущностями, и приём этот читается хуже, чем работает.
  * Подписанная ссылка приходит закодированной, кавычек в ней не бывает.
  */
-const mask = computed<string>(() => `url('${props.url}')`);
+const mask = computed<string>(() =>
+    loaded.value ? `url('${props.url}')` : TRANSPARENT_MASK,
+);
+
+/**
+ * Маска до загрузки картинки — полностью прозрачная.
+ *
+ * Не `none`: без маски узел закрашен `currentColor` целиком и на время загрузки
+ * показывал бы залитый квадрат на месте иконки.
+ */
+const TRANSPARENT_MASK = 'linear-gradient(transparent, transparent)';
+
+/**
+ * Задержки повторных загрузок, мс. Длина перечня — число повторов.
+ *
+ * Первая короткая — на обрыв соединения, вторая длиннее — на перегрузку
+ * хранилища. Дольше ждать незачем: пункт без силуэта заметнее буквы.
+ */
+const RETRY_DELAYS = [500, 2000];
+
+/** Номер попытки; он же ключ узла картинки — смена ключа перезагружает файл. */
+const attempt = ref(0);
+
+const loaded = ref(false);
+
+let retryTimer: ReturnType<typeof setTimeout> | null = null;
+
+const clearRetry = (): void => {
+    if (retryTimer !== null) {
+        clearTimeout(retryTimer);
+        retryTimer = null;
+    }
+};
+
+const onLoad = (): void => {
+    loaded.value = true;
+};
+
+const onError = (): void => {
+    const delay = RETRY_DELAYS[attempt.value];
+
+    if (delay === undefined) {
+        emit('error');
+
+        return;
+    }
+
+    clearRetry();
+    retryTimer = setTimeout(() => {
+        retryTimer = null;
+        attempt.value += 1;
+    }, delay);
+};
+
+// Новая ссылка — новая история попыток: прежние неудачи относились к старой.
+watch(
+    () => props.url,
+    () => {
+        clearRetry();
+        attempt.value = 0;
+        loaded.value = false;
+    },
+);
+
+onBeforeUnmount(clearRetry);
 </script>
 
 <template>
@@ -84,12 +163,14 @@ const mask = computed<string>(() => `url('${props.url}')`);
         :data-icon-for="itemId"
     >
         <img
+            :key="attempt"
             class="cross-service-nav__probe"
             :src="url"
             crossorigin="anonymous"
             alt=""
             aria-hidden="true"
-            @error="emit('error')"
+            @load="onLoad"
+            @error="onError"
         />
     </span>
 </template>
