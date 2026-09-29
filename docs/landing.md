@@ -234,10 +234,11 @@ const { crossService, locale, hasRail, currentUrl, failure } = usePublicNavigati
 | --- | --- | --- |
 | `connect-src` | установки identity | запрос состава рейла |
 | `img-src` | установки identity | логотип |
-| `img-src` | хранилища иконок | иконки пунктов; origin виден в ссылках `iconUrl` |
+| `connect-src` | хранилища иконок | файлы иконок пунктов; origin виден в ссылках `iconUrl` |
+| `img-src` | `data:` | маска иконки получает содержимое файла адресом `data:` |
 
 Хранилище иконок установки обязано отдавать `Access-Control-Allow-Origin`:
-иконка рисуется маской, а маску браузер загружает запросом CORS. Настраивается
+файл иконки пакет забирает запросом CORS. Настраивается
 это на стороне установки; признак — первые буквы имён вместо иконок у всех
 пунктов.
 
@@ -263,8 +264,8 @@ const { crossService, locale, hasRail, currentUrl, failure } = usePublicNavigati
 - [ ] Если выбрана `CrossServiceBar`: вёрстке дан отступ снизу
       `var(--cross-service-bar-height, 0px)`, а плашка смонтирована в корень
       страницы — закрепляет её пакет
-- [ ] `connect-src` и `img-src` включают origin установки, `img-src` — origin
-      хранилища иконок
+- [ ] `connect-src` и `img-src` включают origin установки, `connect-src` — origin
+      хранилища иконок, `img-src` — `data:`
 - [ ] Если у лендинга есть тёмная тема: её переключатель ставит `.app-dark`
       на `<html>`
 

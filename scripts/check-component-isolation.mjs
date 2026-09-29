@@ -86,6 +86,19 @@ const DOCUMENT_ALLOWED = [
     `${CATALOG}/barHeight.ts`,
 ];
 
+/**
+ * Файлы каталога, которым разрешён `fetch`, и основание.
+ *
+ * `iconSource.ts` — файл иконки пункта по адресу, пришедшему props. Данных
+ * рейла он не запрашивает: прежде тот же файл забирал обозреватель по `src`
+ * картинки и по адресу маски. Два пути грузили один адрес в разных режимах
+ * CORS, и Safari портил ими общую запись кэша — иконки пропадали. Один запрос
+ * в одном режиме, а маске — `data:`, и портить нечего. Обращение сведено
+ * в один модуль намеренно: компоненты каталога в сеть не ходят, и `NavIcon.vue`
+ * в перечне не стоит.
+ */
+const FETCH_ALLOWED = [`${CATALOG}/iconSource.ts`];
+
 function sources(directory) {
     return readdirSync(join(ROOT, directory), { withFileTypes: true }).flatMap(
         (entry) => {
@@ -133,9 +146,19 @@ function forbid(needles, message) {
 // --- Условие 1: данные приходят props, а не запросом ---------------------------
 
 forbid(
-    ['fetch(', 'XMLHttpRequest', 'axios', 'navigator.sendBeacon', 'EventSource', 'WebSocket'],
+    ['XMLHttpRequest', 'axios', 'navigator.sendBeacon', 'EventSource', 'WebSocket'],
     'данные приходят props, а не запросом',
 );
+
+/*
+ * `fetch` ищется словом, а не вызовом `fetch(`: разрешённый модуль передаёт
+ * его параметром, и вызов под другим именем прошёл бы мимо иголки.
+ */
+for (const { path, code: contents } of catalog) {
+    if (/\bfetch\b/.test(contents) && !FETCH_ALLOWED.includes(path)) {
+        violations.push(`${path}: fetch — данные приходят props; файлы иконок забирает только iconSource.ts`);
+    }
+}
 
 // --- Условие 2: кэш живёт на бэкенде продукта ----------------------------------
 
