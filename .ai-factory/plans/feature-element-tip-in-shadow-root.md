@@ -66,7 +66,7 @@
   - `tests/elementBundle.spec.ts`: тест «подсказка переносится в слой теневого корня» — бандл содержит `cross-service-nav__tip-layer` и правило `.cross-service-nav__tip` (оформление подсказки внутри теневого корня).
   - Прогнать `npm test` целиком.
 
-- [ ] **Задача 5. Документация, контракт и версия 0.4.9** (после 2–3)
+- [x] **Задача 5. Документация, контракт и версия 0.4.9** (после 2–3)
   - `src/cross-service/CLAUDE.md` (п. про подсказку), комментарии `src/styles/nav-shared.css` (~235) и `src/styles/dark.css` (~19): «в `body` или в слой элемента».
   - `docs/web-component.md`: подсказка живёт в теневом корне и следует `theme`; `docs/styling.md` «Тёмная тема»: оговорка про `body` — только для Vue-входов.
   - `.claude/skills/verdeect-cross-service/references/ENTRIES.md`: `NAV_TIP_TARGET` в составе входа `.`.
