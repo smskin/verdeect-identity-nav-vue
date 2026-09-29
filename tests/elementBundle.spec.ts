@@ -54,6 +54,11 @@ test('визуальный слой встроен в файл вместе с �
     expect(contents).toContain(':host([hidden])');
 });
 
+test('тёмная палитра включается атрибутом хоста theme', () => {
+    // Сборщик снимает кавычки со значения атрибута — сверяется любая запись.
+    expect(bundle()).toMatch(/:host\(\[theme=['"]?dark['"]?\]\)/);
+});
+
 test('порога ширины в файле нет: вид выбирает продукт атрибутом', () => {
     expect(bundle()).not.toContain('matchMedia');
     expect(bundle()).not.toContain('innerWidth');
