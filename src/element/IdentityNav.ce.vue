@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { CrossServiceBar, CrossServiceRail } from '../cross-service';
+import { provide, ref } from 'vue';
+import { CrossServiceBar, CrossServiceRail, NAV_TIP_TARGET } from '../cross-service';
 import type { IdentityNavElementProps } from './types';
 
 /**
@@ -28,6 +29,13 @@ import type { IdentityNavElementProps } from './types';
  * не попало бы, и правило по нему не сработало бы. Продукт меняет значение
  * вместе со своей темой.
  *
+ * **Подсказка полосы остаётся в теневом корне.** `NavTip` выносит её из
+ * прокручиваемой полосы, и у продуктов на Vue — в `body`. Здесь `body`
+ * не годится: визуальный слой элемента живёт в теневом корне, и подсказка
+ * в документе осталась бы без оформления и без тёмной палитры хоста.
+ * Поэтому элемент отдаёт ключом `NAV_TIP_TARGET` свой слой — рядом с видом,
+ * а не внутри полосы, иначе её `overflow` обрезал бы подсказку.
+ *
  * Своих правил вывода состояния здесь нет: абсолютный `currentUrl` передаёт
  * продукт при каждом переходе, потому что SPA-потребитель элемент
  * не перемонтирует.
@@ -38,6 +46,10 @@ const props = withDefaults(defineProps<IdentityNavElementProps>(), {
     locale: 'ru',
     logoUrl: '',
 });
+
+const tipLayer = ref<HTMLElement | null>(null);
+
+provide(NAV_TIP_TARGET, tipLayer);
 </script>
 
 <template>
@@ -58,6 +70,8 @@ const props = withDefaults(defineProps<IdentityNavElementProps>(), {
         :logo-url="props.logoUrl"
         :logo-height="props.logoHeight"
     />
+
+    <div ref="tipLayer" class="cross-service-nav__tip-layer" />
 </template>
 
 <style>
@@ -140,5 +154,14 @@ svg {
 
 :host([hidden]) {
     display: none;
+}
+
+/*
+ * Слой подсказок полосы. Места не занимает, как и хост: подсказка закреплена
+ * `position: fixed` и отсчитывается от окна — предков с `transform`, которые
+ * перехватили бы отсчёт, у слоя нет.
+ */
+.cross-service-nav__tip-layer {
+    display: contents;
 }
 </style>

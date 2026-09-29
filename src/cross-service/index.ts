@@ -38,12 +38,17 @@
  * сервиса это `resources/css/app.css`, где порог оболочки Sakai уже задан.
  * Константа «чтобы не забыть значение», заведённая здесь, уехала бы вместе
  * с пакетом в продукт с другим порогом.
+ *
+ * **Ключ `NAV_TIP_TARGET`** — узел, куда подсказка полосы выносится вместо
+ * `body`. Его отдаёт пользовательский элемент, чтобы подсказка осталась
+ * в теневом корне; продукту на Vue он не нужен.
  */
 
 export { default as CrossServiceRail } from './CrossServiceRail.vue';
 export { default as CrossServiceMenu } from './CrossServiceMenu.vue';
 export { default as CrossServiceBar } from './CrossServiceBar.vue';
 export { default as UserMenu } from './UserMenu.vue';
+export { NAV_TIP_TARGET } from './tipTarget';
 
 export type {
     CrossServiceRailProps,

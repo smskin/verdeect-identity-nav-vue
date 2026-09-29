@@ -59,6 +59,16 @@ test('тёмная палитра включается атрибутом хос
     expect(bundle()).toMatch(/:host\(\[theme=['"]?dark['"]?\]\)/);
 });
 
+test('подсказка полосы переносится в слой теневого корня, а не в body', () => {
+    const contents = bundle();
+
+    // Слой, который элемент отдаёт NavTip; без него подсказка ушла бы в body
+    // и осталась без стилей теневого корня.
+    expect(contents).toContain('cross-service-nav__tip-layer');
+    // Оформление подсказки — в тех же стилях теневого корня, куда она попадает.
+    expect(contents).toMatch(/\.cross-service-nav__tip\{/);
+});
+
 test('порога ширины в файле нет: вид выбирает продукт атрибутом', () => {
     expect(bundle()).not.toContain('matchMedia');
     expect(bundle()).not.toContain('innerWidth');

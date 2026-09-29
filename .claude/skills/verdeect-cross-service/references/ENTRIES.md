@@ -15,6 +15,9 @@
 Отдаёт `CrossServiceRail`, `CrossServiceMenu`, `CrossServiceBar`, `UserMenu`
 и типы `NavItem`, `ProductMenuItem`, `NavPlacement`, `CrossServiceRailProps`,
 `CrossServiceMenuProps`, `CrossServiceBarProps`, `UserMenuProps`.
+Ещё — ключ `NAV_TIP_TARGET`: узел, куда подсказка полосы выносится вместо
+`body`. Отдаёт его пользовательский элемент, чтобы подсказка осталась
+в теневом корне; продукту на Vue он не нужен.
 
 Три вида навигации: полоса слева (десктоп), блок в выдвижном меню продукта
 и плашка внизу экрана. Продукт монтирует полосу и **один** мобильный вид —
