@@ -80,7 +80,7 @@ import { loginAs } from '@verdeect/identity-nav-vue/playwright';
 | Вход | Содержимое | Зависимости |
 | --- | --- | --- |
 | `.` | `CrossServiceRail`, `CrossServiceMenu`, `CrossServiceBar`, `UserMenu` и их типы | `vue` |
-| `./style.css` | визуальный слой | — |
+| `./style.css` | визуальный слой, светлая и тёмная палитра | — |
 | `./identity` | вывод состояния рейла и профиля, типы | `vue` |
 | `./inertia` | адаптер над `usePage()` | `vue`, `@inertiajs/vue3` |
 | `./public` | `usePublicNavigation`: гостевой состав из браузера, типы | `vue` |
@@ -96,6 +96,11 @@ import { loginAs } from '@verdeect/identity-nav-vue/playwright';
 `@inertiajs/vue3`, ни `@playwright/test` не ставит.
 **Продукт не на Vue** — один `./element`: копирует `dist/element.js` в свою
 статику либо импортирует `@verdeect/identity-nav-vue/element` своим сборщиком.
+
+**Тёмная тема** отдельного входа не требует: она лежит в том же `./style.css`
+и включается классом `.app-dark` на `<html>`, а у элемента — свойством
+`theme` (`nav.theme = 'dark'`) ([Тёмная тема](styling.md#тёмная-тема),
+[элемент](web-component.md#тёмная-тема)).
 
 ## Проверка подключения
 
