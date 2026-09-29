@@ -29,4 +29,8 @@ if (customElements.get(IDENTITY_NAV_TAG) === undefined) {
     customElements.define(IDENTITY_NAV_TAG, IdentityNavElement);
 }
 
-export type { ElementPlacement, IdentityNavElementProps } from './types';
+export type {
+    ElementPlacement,
+    ElementTheme,
+    IdentityNavElementProps,
+} from './types';

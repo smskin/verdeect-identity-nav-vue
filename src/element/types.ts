@@ -9,6 +9,16 @@ import type { NavItem } from '../cross-service';
 export type ElementPlacement = 'rail' | 'bottom';
 
 /**
+ * Вариант палитры элемента.
+ *
+ * Свойство только **передаёт** выбор продукта: тему включает правило CSS
+ * `:host([theme='dark'])`, а Vue отражает строковое свойство в атрибут хоста.
+ * Поэтому `nav.theme = 'dark'` и `setAttribute('theme', 'dark')` равносильны.
+ * Отсутствие значения и любое, кроме `dark`, дают светлую палитру.
+ */
+export type ElementTheme = 'light' | 'dark';
+
+/**
  * Свойства элемента `verdeect-identity-nav`.
  *
  * Состав повторяет объединение свойств полосы и плашки, а не вводит свой:
@@ -25,4 +35,5 @@ export interface IdentityNavElementProps {
     readonly profileUrl?: string;
     readonly logoUrl?: string;
     readonly logoHeight?: string;
+    readonly theme?: ElementTheme;
 }
