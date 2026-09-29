@@ -35,21 +35,21 @@
  * ни один селектор не опирается на классы `.layout-wrapper`. Свернув
  * навигацию продукта, пользователь рейла не теряет.
  *
- * Переменные оформления, на которые опираются файлы. Их задаёт продукт;
- * там, где переменной может не быть, указано запасное значение:
- *   --surface-card, --surface-overlay, --surface-border, --surface-hover
- *   --surface-ground, --surface-active
+ * **Цвета видов навигации — палитра пакета** (`--cross-service-color-*`
+ * в `tokens.css`): светлые значения там, тёмные — в `dark.css`, по признаку
+ * темы продукта. Продукт выбирает вариант, а не цвета.
+ *
+ * Переменные темы продукта читают блок пользователя и общие правила фокуса
+ * и переходов. Их задаёт продукт; запасное значение указано у каждой:
+ *   --surface-overlay, --surface-border, --surface-hover
  *   --text-color, --text-color-secondary
  *   --primary-color, --primary-contrast-color
- *   --highlight-background, --highlight-color
- *   --tooltip-background, --tooltip-color
  *   --content-border-radius, --transition-duration
  *   --focus-ring-width, --focus-ring-style, --focus-ring-color
  *
- * Запасные значения взяты из макета `.ai-factory/artifacts/Global Nav Bar.html`
- * (он лежит вне `docs/`, потому что `docs/` уезжает в npm-пакет). Литералами
- * они и остаются — зашитые вместо переменных, они перестали бы следовать
- * теме продукта.
+ * Запасные значения и палитра взяты из макета
+ * `.ai-factory/artifacts/Global Nav Bar.html` (он лежит вне `docs/`, потому
+ * что `docs/` уезжает в npm-пакет).
  */
 
 @import './styles/tokens.css';

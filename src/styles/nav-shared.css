@@ -36,7 +36,7 @@
     align-items: center;
     gap: 12px;
 
-    color: #5c5c5c;
+    color: var(--cross-service-color-text);
     border-radius: 10px;
     transition: background-color var(--transition-duration, 0.2s);
 }
@@ -50,13 +50,13 @@
  */
 
 .cross-service-nav__link:hover {
-    background-color: #e8e8e8;
+    background-color: var(--cross-service-color-hover);
 }
 
 /* Нажатие — тон темнее наведения (макет, «Состояния пункта»). */
 
 .cross-service-nav__link:active {
-    background-color: #e4e4e4;
+    background-color: var(--cross-service-color-pressed);
 }
 
 .cross-service-nav__link:focus-visible {
@@ -73,30 +73,30 @@
  * с подписью сама — она рисуется маской и берёт заливку из `currentColor`
  * (правило `__icon` ниже).
  *
- * **Цвета текущего пункта — постоянные, а не переменные темы продукта.**
- * Решение владельца проекта 09.09.2026, и оно отменяет прежнее.
+ * **Цвета текущего пункта — палитра пакета, а не переменные темы продукта.**
  *
  * Рейл — навигация **установки**, а не раздел продукта: одни и те же сервисы,
  * один и тот же порядок, одно и то же место на экране во всех продуктах.
- * Следуя теме хозяина, он выглядел бы в каждом по-своему, и узнавание — то
+ * Следуя палитре хозяина, он выглядел бы в каждом по-своему, и узнавание — то
  * единственное, ради чего он вообще существует, — терялось бы. Поэтому
  * подсветка берётся из макета и не подменяется ничем.
  *
- * Цена названа прямо: продукт не может привести рейл к своей палитре, и
- * в тёмной теме подсветка остаётся светлой. Это следствие решения, а не
- * недосмотр.
+ * Вариантов у палитры два — светлый и тёмный (`tokens.css`, `dark.css`), и
+ * продукт выбирает между ними своим признаком темы. Выбирает он вариант,
+ * а не цвета: прежде подсветка оставалась светлой и в тёмной теме продукта,
+ * и полоса выглядела на ней чужеродно.
  */
 
 .cross-service-nav__link--current {
-    background-color: #e9e4fb;
-    color: #8265ea;
+    background-color: var(--cross-service-color-current-bg);
+    color: var(--cross-service-color-accent);
     font-weight: 600;
 }
 
 /* Наведение не гасит подсветку текущего пункта. */
 
 .cross-service-nav__link--current:hover {
-    background-color: #e9e4fb;
+    background-color: var(--cross-service-color-current-bg);
 }
 
 /*
@@ -138,7 +138,7 @@
 
 .cross-service-nav .cross-service-nav__stub {
     border-radius: 6px;
-    background-color: #eef2f6;
+    background-color: var(--cross-service-color-stub-bg);
 }
 
 /*
@@ -185,7 +185,7 @@
 }
 
 .cross-service-nav .cross-service-nav__stub {
-    color: #6b7280;
+    color: var(--cross-service-color-stub-text);
 }
 
 /*
@@ -195,8 +195,8 @@
  */
 
 .cross-service-nav .cross-service-nav__link--current .cross-service-nav__stub {
-    color: #fff;
-    background-color: #8265ea;
+    color: var(--cross-service-brand-contrast);
+    background-color: var(--cross-service-brand);
 }
 
 /*
@@ -258,8 +258,8 @@
     font-weight: 400;
     line-height: 1.2;
 
-    background-color: #1b1b1b;
-    color: #fff;
+    background-color: var(--cross-service-color-tip-bg);
+    color: var(--cross-service-color-tip-text);
 
     pointer-events: none;
 }

@@ -48,4 +48,48 @@
      * `var(--cross-service-bar-height, 0px)`.
      */
     --cross-service-bar-z-index: 1000;
+
+    /*
+     * **Палитра навигации — пакетная, одна на все продукты, в двух вариантах.**
+     *
+     * Здесь светлые значения; тёмные переопределяет `dark.css` по признаку
+     * темы продукта. Файлы видов читают цвет только отсюда: литерал в правиле
+     * вида остался бы светлым в тёмной теме молча — набор
+     * `tests/themeTokens.spec.ts` такого не пропускает.
+     *
+     * **Токены приватные, а не переменные темы продукта.** Рейл — навигация
+     * установки, и выглядеть он обязан одинаково во всех продуктах: подогнанный
+     * под палитру хозяина, он терял бы узнавание. Продукт выбирает только
+     * вариант — своим признаком тёмной темы, — а не цвета.
+     *
+     * Светлые значения равны прежним литералам макета до цифры: переход
+     * на токены светлую тему не меняет ни в одном продукте.
+     */
+    --cross-service-color-surface: #f4f4f4;
+    --cross-service-color-border: #e6e6e6;
+    --cross-service-color-text: #5c5c5c;
+    --cross-service-color-hover: #e8e8e8;
+    --cross-service-color-pressed: #e4e4e4;
+    --cross-service-color-current-bg: #e9e4fb;
+    --cross-service-color-accent: #8265ea;
+    --cross-service-color-stub-bg: #eef2f6;
+    --cross-service-color-stub-text: #6b7280;
+    --cross-service-color-divider: #eef2f6;
+    --cross-service-color-tip-bg: #1b1b1b;
+    --cross-service-color-tip-text: #fff;
+    --cross-service-color-popup: #fff;
+    --cross-service-color-popup-border: #e6e6e6;
+    --cross-service-color-popup-divider: #ececec;
+    --cross-service-color-popup-pressed: #e4e4e4;
+    --cross-service-color-popup-shadow: rgb(0 0 0 / 16%);
+    --cross-service-color-scrim: rgb(0 0 0 / 28%);
+
+    /*
+     * Фирменный цвет и цвет поверх него **от темы не зависят** (макет,
+     * «Плашка логотипа»: #8265EA в обеих). Приставки `-color-` у них нет
+     * намеренно: набор пар сверяет только `-color-*`, и тёмная пара с тем же
+     * значением была бы шумом.
+     */
+    --cross-service-brand: #8265ea;
+    --cross-service-brand-contrast: #fff;
 }

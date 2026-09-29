@@ -29,9 +29,22 @@
     cursor: pointer;
 }
 
-.cross-service-user__trigger:hover,
-.cross-service-user__trigger--opened {
+.cross-service-user__trigger:hover {
     background-color: var(--surface-hover, #f4f6f8);
+}
+
+/*
+ * Раскрытый триггер подсвечен **акцентом навигации**, а не наведением
+ * (макет, кадры 4b и 5d): так видно, чьё меню раскрыто, и в тёмной теме
+ * он не сливается с шапкой.
+ *
+ * Это единственное место блока, где цвет берётся из палитры пакета, а не
+ * из темы продукта: поверхности и текст остаются переменными продукта,
+ * потому что блок стоит в его шапке и выпадать из неё не должен.
+ */
+
+.cross-service-user__trigger--opened {
+    background-color: var(--cross-service-color-current-bg);
 }
 
 .cross-service-user__trigger:focus-visible {
@@ -79,6 +92,7 @@
 }
 
 .cross-service-user__trigger--opened .cross-service-user__caret {
+    color: var(--cross-service-color-accent);
     transform: rotate(180deg);
 }
 

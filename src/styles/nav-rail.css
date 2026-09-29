@@ -42,7 +42,7 @@
     height: 100vh;
     padding: var(--cross-service-rail-padding) 0;
 
-    background-color: #f4f4f4;
+    background-color: var(--cross-service-color-surface);
     /*
      * **Разделитель справа — внутренней тенью, а не границей.** Граница стоит
      * вне содержимого, и плитка логотипа до неё не дотягивалась: справа от
@@ -51,7 +51,7 @@
      * и всё за краем содержимого обрезается. Тень рисуется под содержимым:
      * линия та же, а логотип закрывает её своей плиткой.
      */
-    box-shadow: inset -1px 0 0 #e6e6e6;
+    box-shadow: inset -1px 0 0 var(--cross-service-color-border);
 
     /*
      * Пунктов может оказаться больше, чем помещается по высоте: рейл
